@@ -178,23 +178,41 @@ class LrcParser:
 
     def combineTranslation(self, lyricLines, translationDivider: str = None):
         duplicates = self.findDuplicate(lyricLines)
+        # Avoid duplicates
+        parsedLyricTexts = []
         combinedLyrics = []
 
         if len(duplicates) == 0:
             return
         else:
             for duplicateGroup in duplicates:
+
+                isDuplicate = False
+                for lyricLine in duplicateGroup:
+                    if lyricLine.text in parsedLyricTexts:
+                        isDuplicate = True
+                if isDuplicate:
+                    continue
+
                 l = LyricLine(
                     startTimedelta=duplicateGroup[0].startTimedelta,
                     text=duplicateGroup[0].text,
                     offsetMs=duplicateGroup[0].offsetMs,
                 )
+
+                # Analyze translation
+                # if duplicate group contains more than 2 items, that means this line have multiple translations
                 if len(duplicateGroup) > 2:
                     translation = []
                     for lyricLine in duplicateGroup[1:]:
-                        translation.append(lyricLine.text)
+                        translationText = lyricLine.text
+                        translation.append(translationText)
+                        parsedLyricTexts.append(translationText)
                 else:
-                    translation = duplicateGroup[1].text
+                    translationText = duplicateGroup[1].text
+                    translation = translationText
+                    parsedLyricTexts.append(translationText)
                 l.translation = translation
+
                 combinedLyrics.append(l)
             return combinedLyrics
