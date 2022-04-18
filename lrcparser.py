@@ -94,8 +94,6 @@ class LrcParser:
         parseTranslation: bool = False,
         translationAtLeft: bool = False,
     ):
-        contents = fileObject.read()
-
         # set offset if exists
         offsetMs = 0
         offsetMatch = re.search(r"\[offset:(?P<offset>\d*)\]", contents, re.I)
