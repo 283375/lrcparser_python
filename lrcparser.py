@@ -27,7 +27,7 @@ class LyricLine:
         startTimedelta: timedelta,
         text: str,
         offsetMs: int = 0,
-        translation: str or list = None,
+        translation: str or list[str] = None,
     ):
         self.startTimedelta = startTimedelta
         self.text = text
@@ -162,7 +162,7 @@ class LrcParser:
         contents: str,
         parseTranslation: bool = False,
         translationAtLeft: bool = False,
-    ) -> dict:
+    ) -> dict[list[LyricLine], list[dict]]:
         """
         Parses lyrics from a string.
 
@@ -268,7 +268,7 @@ class LrcParser:
             "attributes": attributes,
         }
 
-    def findDuplicate(self, lyricLines: list) -> list:
+    def findDuplicate(self, lyricLines: list[LyricLine]) -> list[LyricLine]:
         """
         findDuplicate finds duplicate lyrics.
 
@@ -317,7 +317,7 @@ class LrcParser:
 
         return duplicateGroup
 
-    def combineTranslation(self, lyricLines: list) -> list:
+    def combineTranslation(self, lyricLines: list[LyricLine]) -> list[LyricLine]:
         """
         combineTranslation analyzes the translation of the lyric.
         * Requires findDuplicate().
