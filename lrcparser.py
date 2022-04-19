@@ -362,6 +362,7 @@ class LrcParser:
                 for lyricLine in duplicateGroup:
                     if lyricLine.text in parsedLyricTexts:
                         isDuplicate = True
+                        break
                 if isDuplicate:
                     continue
 
