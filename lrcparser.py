@@ -43,7 +43,7 @@ class LyricLine:
         :rtype: dict
         ```
         >>> getTime(LyricLine(startTimedelta=datetime.timedelta(minutes=3, seconds=28, milliseconds=492)))
-        <<< {"minutes": 3, "seconds": 28, "microseconds": 492000}
+        {"minutes": 3, "seconds": 28, "microseconds": 492000}
         ```
         """
         timed = self.startTimedelta
@@ -77,9 +77,9 @@ class LyricLine:
         ```
         l = LyricLine(text='Line 1', startTimedelta=datetime.timedelta(seconds=25, milliseconds=478), translation='行 1')
         >>> toStr(l)
-        <<< '[00:25.47]Line 1'
+        '[00:25.47]Line 1'
         >>> toStr(l, msDigits=3, withTranslation=True, translationDivider='///')
-        <<< '[00:25.478]Line 1///行 1'
+        '[00:25.478]Line 1///行 1'
         ```
         """
         time = self.getTime()
@@ -127,7 +127,7 @@ class LyricLine:
         ```
         >>> l = LyricLine(startTimedelta=datetime.timedelta(seconds=25, milliseconds=485))
         >>> int(l)
-        <<< 25485
+        25485
         ```
         """
         time = self.getTime()
@@ -145,7 +145,7 @@ class LyricLine:
         ```
         >>> l = LyricLine(startTimedelta=datetime.timedelta(seconds=25, microseconds=48525))
         >>> float(l)
-        <<< 25048.525
+        25048.525
         ```
         """
         time = self.getTime()
@@ -181,7 +181,7 @@ class LrcParser:
         >>> lStr += '[00:05.26]Line 1 example\\n[00:07.36]Line 2 example | 翻译示例\\n'
         >>> lStr += '[00:09.34]换个位置 | Line 3 example\\n'
         >>> parse(lStr)
-        <<< {"lyricLines": [
+        {"lyricLines": [
             LyricLine(startTimedelta=..., text='Line 1 example', offsetMs=0),
             LyricLine(startTimedelta=..., text='Line 2 example | 翻译示例', offsetMs=0),
             LyricLine(startTimedelta=..., text='[00:09.34]换个位置 | Line 3 example')
@@ -192,13 +192,13 @@ class LrcParser:
             {"name": "by", "attr": "283375"},
         ]}
         >>> parse(lStr, parseTranslation=True)
-        <<< {"lyricLines": [
+        {"lyricLines": [
             LyricLine(startTimedelta=..., text='Line 1 example', offsetMs=0),
             LyricLine(startTimedelta=..., text='Line 2 example', offsetMs=0, translation='翻译示例'),
             LyricLine(startTimedelta=..., text='换个位置', offsetMs=0, translation='Line 3 example')
         ], "attributes": [...]}
         >>> parse(lStr, parseTranslation=True, translationAtLeft=True)
-        <<< {"lyricLines": [
+        {"lyricLines": [
             LyricLine(startTimedelta=..., text='Line 1 example', offsetMs=0),
             LyricLine(startTimedelta=..., text='翻译示例', offsetMs=0, translation='Line 2 example'),
             LyricLine(startTimedelta=..., text='Line 3 example', offsetMs=0, translation='换个位置')
@@ -285,7 +285,7 @@ class LrcParser:
             LyricLine(startTimedelta=datetime.timedelta(seconds=2, milliseconds=589), text='Line 5'),
             LyricLine(startTimedelta=datetime.timedelta(seconds=2, milliseconds=589), text='Line 6'),
         ])
-        <<< [
+        [
             [
                 LyricLine(startTimedelta=datetime.timedelta(seconds=1, milliseconds=589), text='Line 1'),
                 LyricLine(startTimedelta=datetime.timedelta(seconds=1, milliseconds=589), text='Line 2'),
@@ -334,7 +334,7 @@ class LrcParser:
             LyricLine(startTimedelta=datetime.timedelta(seconds=2, milliseconds=589), text='翻译 2'),
             LyricLine(startTimedelta=datetime.timedelta(seconds=2, milliseconds=589), text='これは2行目です'),
         ])
-        <<< [
+        [
             LyricLine(
                 startTimedelta=datetime.timedelta(seconds=1, milliseconds=589),
                 text='Line 1',
