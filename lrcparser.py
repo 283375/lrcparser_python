@@ -1,11 +1,9 @@
-from _default import (
-    LRCPARSER_DEFAULT_TRANSLATION_DIVIDER,
-    LRCPARSER_LRC_REGEX,
-    LRCPARSER_ATTR_REGEX,
-)
 import re
 from datetime import timedelta
 
+LRC_REGEX = r"(?P<time>\[(?P<minutes>\d{2}):(?P<seconds>\d{2})\.(?P<milliseconds>\d{2,3})\])(?P<text>.*)"
+ATTR_REGEX = r"\[(?P<name>[^\d]+):(?P<attr>.+)\]"
+DEFAULT_TRANSLATION_DIVIDER = " | "
 
 class LyricLine:
     """
@@ -94,7 +92,7 @@ class LyricLine:
             ""
             if not withTranslation
             else "{}{}".format(
-                translationDivider or LRCPARSER_DEFAULT_TRANSLATION_DIVIDER,
+                translationDivider or DEFAULT_TRANSLATION_DIVIDER,
                 self.translation,
             )
         )
@@ -166,7 +164,7 @@ class LrcParser:
         """
         Parses lyrics from a string.
 
-        * If you want to custom the translation divider, please change the LRCPARSER_DEFAULT_TRANSLATION_DIVIDER variable.
+        * If you want to custom the translation divider, please change the DEFAULT_TRANSLATION_DIVIDER variable.
 
         :param contents: The lyric string, e.g.'[00:01.25]Lyric'.
         :type contents: str
@@ -218,7 +216,7 @@ class LrcParser:
 
         # First loop: find all lyrics and remove them from line array
         for content in contents:
-            contentMatch = re.match(LRCPARSER_LRC_REGEX, content)
+            contentMatch = re.match(LRC_REGEX, content)
             if contentMatch:
                 parsedLyricLines.append(content)
 
@@ -254,7 +252,7 @@ class LrcParser:
         # Second loop: find all attributes
         [contents.remove(i) for i in parsedLyricLines]
         for content in contents:
-            attr = re.match(LRCPARSER_ATTR_REGEX, content)
+            attr = re.match(ATTR_REGEX, content)
             if attr:
                 attributes.append(
                     {
