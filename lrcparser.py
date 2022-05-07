@@ -2,7 +2,7 @@ import re
 from datetime import timedelta
 
 LRC_REGEX = r"(?P<time>\[(?P<minutes>\d{2}):(?P<seconds>\d{2})\.(?P<milliseconds>\d{2,3})\])(?P<text>.*)"
-ATTR_REGEX = r"\[(?P<name>[^\d]+):(?P<attr>.+)\]"
+ATTR_REGEX = r"\[(?P<name>[^\d]+):(?P<value>.+)\]"
 DEFAULT_TRANSLATION_DIVIDER = " | "
 
 class LyricLine:
@@ -184,10 +184,10 @@ class LrcParser:
             LyricLine(startTimedelta=..., text='Line 2 example | 翻译示例', offsetMs=0),
             LyricLine(startTimedelta=..., text='[00:09.34]换个位置 | Line 3 example')
         ], "attributes": [
-            {"name": "ti", "attr": "TEST"},
-            {"name": "ar", "attr": "283375"},
-            {"name": "al", "attr": "TEST ~AN EXAMPLE FOR YOU~"},
-            {"name": "by", "attr": "283375"},
+            {"name": "ti", "values": "TEST"},
+            {"name": "ar", "values": "283375"},
+            {"name": "al", "values": "TEST ~AN EXAMPLE FOR YOU~"},
+            {"name": "by", "values": "283375"},
         ]}
 
         >>> parse(lStr, parseTranslation=True)
@@ -259,7 +259,7 @@ class LrcParser:
                 attributes.append(
                     {
                         "name": attr.group("name"),
-                        "attr": attr.group("attr"),
+                        "value": attr.group("value"),
                     }
                 )
 

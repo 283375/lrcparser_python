@@ -59,10 +59,10 @@ class TestParser:
             == result["lyricLines"][6].startTimedelta
         )
         assert result["attributes"] == [
-            {"name": "ti", "attr": "test_lyric"},
-            {"name": "ar", "attr": "283375"},
-            {"name": "al", "attr": "TEST ~THE BEST WAY TO AVOID ERRORS~"},
-            {"name": "by", "attr": "283375"},
+            {"name": "ti", "value": "test_lyric"},
+            {"name": "ar", "value": "283375"},
+            {"name": "al", "value": "TEST ~エラーを回避するための最良の方法~"},
+            {"name": "by", "value": "283375"},
         ]
 
     def test_find_duplicate(self):
