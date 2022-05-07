@@ -5,6 +5,7 @@ LRC_REGEX = r"(?P<time>\[(?P<minutes>\d{2}):(?P<seconds>\d{2})\.(?P<milliseconds
 ATTR_REGEX = r"\[(?P<name>[^\d]+):(?P<value>.+)\]"
 DEFAULT_TRANSLATION_DIVIDER = " | "
 
+
 class LyricLine:
     """
     Represents a lyric line
@@ -30,8 +31,12 @@ class LyricLine:
         self.startTimedelta = startTimedelta
         self.text = text
         self.offsetMs = offsetMs
-        self.offsetTimedelta = self.startTimedelta + timedelta(milliseconds=offsetMs)
         self.translation = translation
+
+    # This is something like computed(() => ...) in Vue.js, which I like a lot.
+    @property
+    def offsetTimedelta(self):
+        return self.startTimedelta + timedelta(milliseconds=self.offsetMs)
 
     def getTime(self) -> dict:
         """
@@ -251,11 +256,14 @@ class LrcParser:
                 )
                 lyricLines.append(lyricLine)
 
+        globalOffset = 0
         # Second loop: find all attributes
         [contents.remove(i) for i in parsedLyricLines]
         for content in contents:
             attr = re.match(ATTR_REGEX, content)
             if attr:
+                if attr.group("name").lower() == "offset":
+                    globalOffset = int(attr.group("value"))
                 attributes.append(
                     {
                         "name": attr.group("name"),
@@ -264,9 +272,19 @@ class LrcParser:
                 )
 
         return {
+            "globalOffset": globalOffset,
             "lyricLines": lyricLines,
             "attributes": attributes,
         }
+
+    def applyGlobalOffset(
+        self, lyricLines: list[LyricLine], globalOffset: int
+    ) -> list[LyricLine]:
+        ret = []
+        for lyricLine in lyricLines:
+            lyricLine.offsetMs = globalOffset
+            ret.append(lyricLine)
+        return ret
 
     def findDuplicate(self, lyricLines: list[LyricLine]) -> list[LyricLine]:
         """

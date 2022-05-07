@@ -63,7 +63,17 @@ class TestParser:
             {"name": "ar", "value": "283375"},
             {"name": "al", "value": "TEST ~エラーを回避するための最良の方法~"},
             {"name": "by", "value": "283375"},
+            {"name": "OFFset", "value": "250"}
         ]
+
+    def test_offset(self):
+        offsetLines = parser.applyGlobalOffset(
+            result["lyricLines"], result["globalOffset"]
+        )
+        assert offsetLines[0].offsetMs == 250
+        assert offsetLines[0].offsetTimedelta == timedelta(
+            seconds=0, milliseconds=20 + 250
+        )
 
     def test_find_duplicate(self):
         dups = parser.findDuplicate(result["lyricLines"])
