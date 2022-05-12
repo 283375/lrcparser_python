@@ -3,7 +3,7 @@ from datetime import timedelta
 
 LRC_REGEX = r"(?P<time>\[(?P<minutes>\d{2}):(?P<seconds>\d{2})\.(?P<milliseconds>\d{2,3})\])(?P<text>.*)"
 ATTR_REGEX = r"\[(?P<name>[^\d]+):(?P<value>.+)\]"
-DEFAULT_TRANSLATION_DIVIDER = " | "
+TRANSLATION_DIVIDER = " | "
 
 
 class LyricLine:
@@ -97,7 +97,7 @@ class LyricLine:
             ""
             if not withTranslation
             else "{}{}".format(
-                translationDivider or DEFAULT_TRANSLATION_DIVIDER,
+                translationDivider or TRANSLATION_DIVIDER,
                 self.translation,
             )
         )

@@ -1,6 +1,6 @@
 import pytest
 
-from lrcparser import LyricLine, LrcParser, DEFAULT_TRANSLATION_DIVIDER
+from lrcparser import LyricLine, LrcParser, TRANSLATION_DIVIDER
 from datetime import timedelta
 
 test_LyricLine = LyricLine(
@@ -24,7 +24,7 @@ class TestLyricLine:
         assert test_LyricLine.toStr(
             msDigits=3, withTranslation=True
         ) == "[00:05.593]This is a test line.{}这是测试。".format(
-            DEFAULT_TRANSLATION_DIVIDER
+            TRANSLATION_DIVIDER
         )
         assert (
             test_LyricLine.toStr(
