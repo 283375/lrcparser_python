@@ -21,10 +21,9 @@ class TestLyricLine:
 
     def test_to_str(self):
         assert test_LyricLine.toStr() == "[00:05.59]This is a test line."
-        assert test_LyricLine.toStr(
-            msDigits=3, withTranslation=True
-        ) == "[00:05.593]This is a test line.{}这是测试。".format(
-            TRANSLATION_DIVIDER
+        assert (
+            test_LyricLine.toStr(msDigits=3, withTranslation=True)
+            == f"[00:05.593]This is a test line.{TRANSLATION_DIVIDER}这是测试。"
         )
         assert (
             test_LyricLine.toStr(
@@ -63,7 +62,7 @@ class TestParser:
             {"name": "ar", "value": "283375"},
             {"name": "al", "value": "TEST ~エラーを回避するための最良の方法~"},
             {"name": "by", "value": "283375"},
-            {"name": "OFFset", "value": "250"}
+            {"name": "OFFset", "value": "250"},
         ]
 
     def test_offset(self):

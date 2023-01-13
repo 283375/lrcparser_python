@@ -94,30 +94,23 @@ class LyricLine:
             ),
         )
         translationStr = (
-            ""
-            if not withTranslation
-            else "{}{}".format(
-                translationDivider or TRANSLATION_DIVIDER,
-                self.translation,
-            )
+            f"{translationDivider or TRANSLATION_DIVIDER}{self.translation}"
+            if withTranslation
+            else ""
         )
-        return "[{}]{}{}".format(
-            timeStr,
-            self.text,
-            translationStr,
-        )
+        return f"[{timeStr}]{self.text}{translationStr}"
 
     def __repr__(self) -> str:
         returnStr = "LyricLine("
         if self.text:
-            returnStr += 'text="{}", '.format(self.text)
+            returnStr += f'text="{self.text}", '
         if self.startTimedelta:
-            returnStr += "startTimedelta={}, ".format(repr(self.startTimedelta))
+            returnStr += f"startTimedelta={repr(self.startTimedelta)}, "
         if self.offsetMs:
-            returnStr += "offsetMs={}, ".format(self.offsetMs)
+            returnStr += f"offsetMs={self.offsetMs}, "
         if self.translation:
-            returnStr += 'translation="{}", '.format(self.translation)
-        return returnStr + ")"
+            returnStr += f'translation="{self.translation}", '
+        return f"{returnStr})"
 
     def __str__(self) -> str:
         return self.toStr()
@@ -210,12 +203,8 @@ class LrcParser:
         ], "attributes": [...]}
 
         """
-        # set offset if exists
-        offsetMs = 0
         offsetMatch = re.search(r"\[offset:(?P<offset>\d*)\]", contents, re.I)
-        if offsetMatch:
-            offsetMs = int(offsetMatch.group("offset"))
-
+        offsetMs = int(offsetMatch["offset"]) if offsetMatch else 0
         contents = contents.splitlines()
         lyricLines = []
         attributes = []
@@ -228,17 +217,17 @@ class LrcParser:
                 parsedLyricLines.append(content)
 
                 if parseTranslation:
-                    text = contentMatch.group("text").split(" | ")
+                    text = contentMatch["text"].split(" | ")
                     translation = (
                         text[int(not translationAtLeft)] if len(text) > 1 else None
                     )
                     text = text[int(translationAtLeft)]
                 else:
                     translation = None
-                    text = contentMatch.group("text")
+                    text = contentMatch["text"]
 
                 # adapt lyrics like [01:02.345678] (will this kind of lyric even exist?)
-                milliseconds = contentMatch.group("milliseconds")
+                milliseconds = contentMatch["milliseconds"]
                 if len(milliseconds) <= 3:
                     microseconds = milliseconds.ljust(6, "0")
                 else:
@@ -246,8 +235,8 @@ class LrcParser:
 
                 lyricLine = LyricLine(
                     startTimedelta=timedelta(
-                        minutes=int(contentMatch.group("minutes")),
-                        seconds=int(contentMatch.group("seconds")),
+                        minutes=int(contentMatch["minutes"]),
+                        seconds=int(contentMatch["seconds"]),
                         microseconds=int(microseconds),
                     ),
                     text=text,
@@ -262,14 +251,9 @@ class LrcParser:
         for content in contents:
             attr = re.match(ATTR_REGEX, content)
             if attr:
-                if attr.group("name").lower() == "offset":
-                    globalOffset = int(attr.group("value"))
-                attributes.append(
-                    {
-                        "name": attr.group("name"),
-                        "value": attr.group("value"),
-                    }
-                )
+                if attr["name"].lower() == "offset":
+                    globalOffset = int(attr["value"])
+                attributes.append({"name": attr["name"], "value": attr["value"]})
 
         return {
             "globalOffset": globalOffset,
@@ -321,15 +305,16 @@ class LrcParser:
         duplicateGroup = []
 
         for lyric in lyricLines:
-            dupLrc = []
-            for lyric2 in lyricLines:
+            dupLrc = [
+                lyric2
+                for lyric2 in lyricLines
                 if (
                     lyric != lyric2
                     and lyric2 not in parsedLyrics
                     and lyric.startTimedelta == lyric2.startTimedelta
-                ):
-                    dupLrc.append(lyric2)
-            if len(dupLrc) > 0:
+                )
+            ]
+            if dupLrc:
                 duplicateGroup.append([lyric] + dupLrc)
             parsedLyrics.append(lyric)
 
@@ -367,42 +352,39 @@ class LrcParser:
 
         """
         duplicates = self.findDuplicate(lyricLines)
+        if len(duplicates) == 0:
+            return
         # Avoid duplicates
         parsedLyricTexts = []
         combinedLyrics = []
 
-        if len(duplicates) == 0:
-            return
-        else:
-            for duplicateGroup in duplicates:
+        for duplicateGroup in duplicates:
 
-                isDuplicate = False
-                for lyricLine in duplicateGroup:
-                    if lyricLine.text in parsedLyricTexts:
-                        isDuplicate = True
-                        break
-                if isDuplicate:
-                    continue
+            isDuplicate = any(
+                lyricLine.text in parsedLyricTexts for lyricLine in duplicateGroup
+            )
+            if isDuplicate:
+                continue
 
-                l = LyricLine(
-                    startTimedelta=duplicateGroup[0].startTimedelta,
-                    text=duplicateGroup[0].text,
-                    offsetMs=duplicateGroup[0].offsetMs,
-                )
+            l = LyricLine(
+                startTimedelta=duplicateGroup[0].startTimedelta,
+                text=duplicateGroup[0].text,
+                offsetMs=duplicateGroup[0].offsetMs,
+            )
 
-                # Analyze translation
-                # if duplicate group contains more than 2 items, that means this line have multiple translations
-                if len(duplicateGroup) > 2:
-                    translation = []
-                    for lyricLine in duplicateGroup[1:]:
-                        translationText = lyricLine.text
-                        translation.append(translationText)
-                        parsedLyricTexts.append(translationText)
-                else:
-                    translationText = duplicateGroup[1].text
-                    translation = translationText
+            # Analyze translation
+            # if duplicate group contains more than 2 items, that means this line have multiple translations
+            if len(duplicateGroup) > 2:
+                translation = []
+                for lyricLine in duplicateGroup[1:]:
+                    translationText = lyricLine.text
+                    translation.append(translationText)
                     parsedLyricTexts.append(translationText)
-                l.translation = translation
+            else:
+                translationText = duplicateGroup[1].text
+                translation = translationText
+                parsedLyricTexts.append(translation)
+            l.translation = translation
 
-                combinedLyrics.append(l)
-            return combinedLyrics
+            combinedLyrics.append(l)
+        return combinedLyrics
