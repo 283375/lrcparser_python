@@ -367,33 +367,16 @@ class LrcParser:
         duplicates = self.find_duplicate(lyric_lines)
         if len(duplicates) == 0:
             return lyric_lines
-        # Avoid duplicates
-        parsed_lrc_texts = []
+
         combined_lrcs = []
-
-        for duplicate_group in duplicates:
-
-            is_duplicate = any(
-                lyricLine.text in parsed_lrc_texts for lyricLine in duplicate_group
+        for duplicate in duplicates:
+            main_lyric_line = duplicate[0]
+            lyric_line = LyricLine(
+                start_timedelta=main_lyric_line.start_timedelta,
+                text=main_lyric_line.text,
+                offset_ms=main_lyric_line.offset_ms,
+                translations=[lyric_line.text for lyric_line in duplicate[1:]],
             )
-            if is_duplicate:
-                continue
+            combined_lrcs.append(lyric_line)
 
-            l = LyricLine(
-                start_timedelta=duplicate_group[0].start_timedelta,
-                text=duplicate_group[0].text,
-                offset_ms=duplicate_group[0].offset_ms,
-            )
-
-            # Analyze translation
-            # if duplicate group contains more than 2 items, that means this line have multiple translations
-            translation = []
-            for lyricLine in duplicate_group[1:]:
-                translationText = lyricLine.text
-                translation.append(translationText)
-                parsed_lrc_texts.append(translationText)
-
-            l.translations = translation
-
-            combined_lrcs.append(l)
         return combined_lrcs
