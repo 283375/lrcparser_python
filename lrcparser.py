@@ -7,6 +7,10 @@ TRANSLATION_DIVIDER = " | "
 
 
 class LyricLine:
+    text: str
+    offsetMs: int
+    translation: list[str]
+
     """
     Represents a lyric line
 
@@ -18,7 +22,7 @@ class LyricLine:
     :param offsetMs: The offset of the lyric line, defaults to `0`
     :type offsetMs: int, optional
     :param translation: The translation , defaults to None
-    :type translation: str or list, optional
+    :type translation: list, optional
     """
 
     def __init__(
@@ -26,7 +30,7 @@ class LyricLine:
         startTimedelta: timedelta,
         text: str,
         offsetMs: int = 0,
-        translation: str or list[str] = None,
+        translation: list[str] = None,
     ):
         self.startTimedelta = startTimedelta
         self.text = text
@@ -64,7 +68,7 @@ class LyricLine:
         self,
         msDigits: int = 2,
         withTranslation: bool = False,
-        translationDivider: str = None,
+        translationDivider: str = TRANSLATION_DIVIDER,
     ) -> str:
         """
         toStr returns the string format of the lyric.
@@ -93,11 +97,11 @@ class LyricLine:
                 msDigits, "0"
             ),
         )
-        translationStr = (
-            f"{translationDivider or TRANSLATION_DIVIDER}{self.translation}"
-            if withTranslation
-            else ""
-        )
+        translationStr = ""
+
+        if withTranslation:
+            for translation in self.translation:
+                translationStr += f"{translationDivider}{translation}"
         return f"[{timeStr}]{self.text}{translationStr}"
 
     def __repr__(self) -> str:
@@ -374,16 +378,12 @@ class LrcParser:
 
             # Analyze translation
             # if duplicate group contains more than 2 items, that means this line have multiple translations
-            if len(duplicateGroup) > 2:
-                translation = []
-                for lyricLine in duplicateGroup[1:]:
-                    translationText = lyricLine.text
-                    translation.append(translationText)
-                    parsedLyricTexts.append(translationText)
-            else:
-                translationText = duplicateGroup[1].text
-                translation = translationText
-                parsedLyricTexts.append(translation)
+            translation = []
+            for lyricLine in duplicateGroup[1:]:
+                translationText = lyricLine.text
+                translation.append(translationText)
+                parsedLyricTexts.append(translationText)
+
             l.translation = translation
 
             combinedLyrics.append(l)

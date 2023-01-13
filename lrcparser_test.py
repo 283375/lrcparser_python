@@ -7,7 +7,7 @@ test_LyricLine = LyricLine(
     startTimedelta=timedelta(seconds=5, milliseconds=593),
     text="This is a test line.",
     offsetMs=50,
-    translation="这是测试。",
+    translation=["这是测试。"],
 )
 
 
@@ -83,7 +83,9 @@ class TestParser:
     def test_combine_translation(self):
         translations = parser.combineTranslation(result["lyricLines"])
         assert translations[0].text == "Line 4 with TRANSLATION! COOL!!!"
-        assert translations[0].translation == "这行有翻译！真他妈的酷！！！"
+        assert translations[0].translation == ["这行有翻译！真他妈的酷！！！"]
         assert translations[1].text == "Sad because secs < 60"
-        assert translations[1].translation[0] == "But we can change the rules :)"
-        assert translations[1].translation[1] == "我只是来凑数的"
+        assert translations[1].translation == [
+            "But we can change the rules :)",
+            "我只是来凑数的",
+        ]
