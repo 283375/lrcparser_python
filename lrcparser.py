@@ -8,11 +8,6 @@ TRANSLATION_DIVIDER = " | "
 
 
 class LyricLine:
-    start_timedelta: timedelta
-    text: str
-    offset_ms: int
-    translations: list[str]
-
     """
     Represents a lyric line
 
@@ -154,6 +149,22 @@ class LyricLine:
             time["minutes"] * (60 * 1000)
             + time["seconds"] * 1000
             + time["microseconds"] / 1000
+        )
+
+    def __hash__(self) -> int:
+        unique_str = (
+            str(self.start_timedelta)
+            + self.text
+            + str(self.offset_ms)
+            + "".join(self.translations or [])
+        )
+        return hash(unique_str)
+
+    def __eq__(self, other: object) -> bool:
+        return (
+            self.__hash__() == other.__hash__()
+            if isinstance(other, self.__class__)
+            else False
         )
 
 

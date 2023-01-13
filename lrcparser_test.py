@@ -51,7 +51,8 @@ class TestParser:
         )
         assert result["lyric_lines"][3].text == expectedLyricLine.text
         assert (
-            result["lyric_lines"][3].start_timedelta == expectedLyricLine.start_timedelta
+            result["lyric_lines"][3].start_timedelta
+            == expectedLyricLine.start_timedelta
         )
         assert (
             result["lyric_lines"][5].start_timedelta
