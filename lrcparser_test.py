@@ -39,21 +39,17 @@ class TestLyricLine:
 
 
 parser = LrcParser()
-with open("example.lrc", "r", encoding="utf-8") as lrcFile:
-    result = parser.parse(lrcFile.read())
+with open("example.lrc", "r", encoding="utf-8") as lrc_file:
+    result = parser.parse(lrc_file.read())
 
 
 class TestParser:
     def test_parse(self):
-        expectedLyricLine = LyricLine(
+        expected_lyric_line = LyricLine(
             start_timedelta=timedelta(seconds=28, microseconds=330000),
             text="Line 4 with TRANSLATION! COOL!!!",
         )
-        assert result["lyric_lines"][3].text == expectedLyricLine.text
-        assert (
-            result["lyric_lines"][3].start_timedelta
-            == expectedLyricLine.start_timedelta
-        )
+        assert result["lyric_lines"][3] == expected_lyric_line
         assert (
             result["lyric_lines"][5].start_timedelta
             == result["lyric_lines"][6].start_timedelta
@@ -67,11 +63,11 @@ class TestParser:
         ]
 
     def test_offset(self):
-        offsetLines = parser.apply_global_offset(
+        offset_lines = parser.apply_global_offset(
             result["lyric_lines"], result["global_offset"]
         )
-        assert offsetLines[0].offset_ms == 250
-        assert offsetLines[0].offset_timedelta == timedelta(
+        assert offset_lines[0].offset_ms == 250
+        assert offset_lines[0].offset_timedelta == timedelta(
             seconds=0, milliseconds=20 + 250
         )
 
