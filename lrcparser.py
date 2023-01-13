@@ -321,24 +321,17 @@ class LrcParser:
         ]
 
         """
-        parsed_lrcs = []
-        duplicate_group = []
+
+        timedelta_dict: dict[timedelta, list[LyricLine]] = {}
 
         for lyric_line in lyric_lines:
-            dup_lrc = [
-                lyric2
-                for lyric2 in lyric_lines
-                if (
-                    lyric_line != lyric2
-                    and lyric2 not in parsed_lrcs
-                    and lyric_line.start_timedelta == lyric2.start_timedelta
-                )
-            ]
-            if dup_lrc:
-                duplicate_group.append([lyric_line] + dup_lrc)
-            parsed_lrcs.append(lyric_line)
+            if timedelta_dict.get(lyric_line.start_timedelta) is None:
+                timedelta_dict[lyric_line.start_timedelta] = [lyric_line]
+            else:
+                timedelta_dict[lyric_line.start_timedelta].append(lyric_line)
 
-        return duplicate_group
+        timedelta_dict = dict(filter(lambda x: len(x[1]) > 1, timedelta_dict.items()))
+        return list(dict(sorted(timedelta_dict.items(), key=lambda i: i[0])).values())
 
     def combine_translation(self, lyric_lines: list[LyricLine]) -> list[LyricLine]:
         """
