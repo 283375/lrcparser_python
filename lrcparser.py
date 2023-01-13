@@ -95,7 +95,7 @@ class LyricLine:
         )
         translation_str = ""
 
-        if translations:
+        if translations and self.translations:
             for translation in self.translations:
                 translation_str += f"{translation_divider}{translation}"
         return f"[{time_str}]{self.text}{translation_str}"
@@ -176,7 +176,7 @@ class LrcParser:
 
     def parse(
         self,
-        contents: str,
+        s: str,
         parse_translations: bool = False,
         translation_divider: str = TRANSLATION_DIVIDER,
     ) -> ParseResult:
@@ -224,14 +224,14 @@ class LrcParser:
         ], "attributes": [...]}
 
         """
-        contents: list[str] = contents.splitlines()
+        lines = s.splitlines()
         lrc_lines = []
         attributes = []
         global_offset = 0
 
-        for content in contents:
-            attribute_re_result = re.match(ATTR_REGEX, content)
-            lrc_re_result = re.match(LRC_REGEX, content)
+        for line in lines:
+            attribute_re_result = re.match(ATTR_REGEX, line)
+            lrc_re_result = re.match(LRC_REGEX, line)
 
             if attribute_re_result:
                 if attribute_re_result["name"].lower() == "offset":
@@ -373,7 +373,7 @@ class LrcParser:
         """
         duplicates = self.find_duplicate(lyric_lines)
         if len(duplicates) == 0:
-            return
+            return lyric_lines
         # Avoid duplicates
         parsed_lrc_texts = []
         combined_lrcs = []
