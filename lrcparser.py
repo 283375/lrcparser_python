@@ -178,6 +178,7 @@ class LrcParser:
         self,
         contents: str,
         parse_translations: bool = False,
+        translation_divider: str = TRANSLATION_DIVIDER,
         translations_at_left: bool = False,
     ) -> ParseResult:
         """
@@ -224,8 +225,6 @@ class LrcParser:
         ], "attributes": [...]}
 
         """
-        offset_re_result = re.search(r"\[offset:(?P<offset>\d*)\]", contents, re.I)
-        offset_ms = int(offset_re_result["offset"]) if offset_re_result else 0
         contents: list[str] = contents.splitlines()
         lrc_lines = []
         attributes = []
@@ -238,7 +237,7 @@ class LrcParser:
                 parsed_lrc_lines.append(content)
 
                 if parse_translations:
-                    text = content_re_result["text"].split(" | ")
+                    text = content_re_result["text"].split(translation_divider)
                     translation = (
                         text[int(not translations_at_left)] if len(text) > 1 else None
                     )
@@ -261,7 +260,6 @@ class LrcParser:
                         microseconds=int(microseconds),
                     ),
                     text=text,
-                    offset_ms=offset_ms,
                     translations=translation,
                 )
                 lrc_lines.append(lrc_line)
