@@ -12,14 +12,14 @@ class LrcLine:
     Represents a lyric line
 
     Take `[00:01.26]Lyric text` for example.
-    :param startTimedelta: The start time of the lyric, `[00:01.26]`Lyric text
-    :type startTimedelta: datetime.timedelta
+    :param start_timedelta: The start time of the lyric, `[00:01.26]`Lyric text
+    :type start_timedelta: timedelta
     :param text: The text of the lyric. [00:01.26]`Lyric text`
     :type text: str
-    :param offsetMs: The offset of the lyric line, defaults to `0`
-    :type offsetMs: int, optional
-    :param translation: The translation , defaults to None
-    :type translation: list, optional
+    :param offset_ms: The offset of the lyric line, defaults to `0`
+    :type offset_ms: int, optional
+    :param translations: The translations, defaults to None
+    :type translations: list or None, optional
     """
 
     def __init__(
@@ -41,13 +41,14 @@ class LrcLine:
 
     def get_time(self) -> dict[Literal["minutes", "seconds", "microseconds"], int]:
         """
-        getTime returns a dictionary that contains the time of the lyric.
+        get_time returns a dict that contains the time of the lyric.
 
-        :return: A dictionary contains `minutes`, `seconds`, and `microseconds`(micro, *not* milli) of the lyric
+        :return: A dict contains `minutes`, `seconds`, and `microseconds`(micro, *not* milli) of the lyric
         :rtype: dict
 
-        >>> getTime(LyricLine(startTimedelta=datetime.timedelta(minutes=3, seconds=28, milliseconds=492)))
-        {"minutes": 3, "seconds": 28, "microseconds": 492000}
+        >>> line = LrcLine(start_timedelta=timedelta(minutes=3, seconds=28, milliseconds=492), text='')
+        >>> line.get_time() == {'minutes': 3, 'seconds': 28, 'microseconds': 492000}
+        True
 
         """
         hours, mins_and_secs = divmod(self.start_timedelta.seconds, 3600)
@@ -67,21 +68,25 @@ class LrcLine:
         translation_divider: str = TRANSLATION_DIVIDER,
     ) -> str:
         """
-        toStr returns the string format of the lyric.
+        to_str returns the string format of the lyric.
 
-        :param msDigits: The digits of the microseconds, defaults to 2
-        :type msDigits: int, optional
-        :param withTranslation: Whether display translation or not, defaults to False
-        :type withTranslation: bool, optional
-        :param translationDivider: The translation divider, defaults to None
-        :type translationDivider: str, optional
+        :param ms_digits: The digits of the microseconds, defaults to 2
+        :type ms_digits: int, optional
+        :param translations: Whether display translation or not, defaults to False
+        :type translations: bool, optional
+        :param translation_divider: The translation divider, defaults to None
+        :type translation_divider: str, optional
         :return: The string format of the lyric
         :rtype: str
 
-        >>> l = LyricLine(text='Line 1', startTimedelta=datetime.timedelta(seconds=25, milliseconds=478), translation='行 1')
-        >>> toStr(l)
+        >>> line = LrcLine(
+        ...     start_timedelta=timedelta(seconds=25, milliseconds=478),
+        ...     text='Line 1',
+        ...     translations=['行 1']
+        ... )
+        >>> line.to_str()
         '[00:25.47]Line 1'
-        >>> toStr(l, msDigits=3, withTranslation=True, translationDivider='///')
+        >>> line.to_str(ms_digits=3, translations=True, translation_divider='///')
         '[00:25.478]Line 1///行 1'
 
         """
@@ -101,11 +106,11 @@ class LrcLine:
         return f"[{time_str}]{self.text}{translation_str}"
 
     def __repr__(self) -> str:
-        return_str = "LyricLine("
+        return_str = "LrcLine("
         if self.text:
             return_str += f'text="{self.text}", '
         if self.start_timedelta:
-            return_str += f"startTimedelta={repr(self.start_timedelta)}, "
+            return_str += f"start_timedelta={repr(self.start_timedelta)}, "
         if self.offset_ms:
             return_str += f"offsetMs={self.offset_ms}, "
         if self.translations:
@@ -121,8 +126,8 @@ class LrcLine:
 
         :rtype: int
 
-        >>> l = LyricLine(startTimedelta=datetime.timedelta(seconds=25, milliseconds=485))
-        >>> int(l)
+        >>> line = LrcLine(start_timedelta=timedelta(seconds=25, milliseconds=485), text='')
+        >>> int(line)
         25485
 
         """
@@ -139,8 +144,8 @@ class LrcLine:
 
         :rtype: float
 
-        >>> l = LyricLine(startTimedelta=datetime.timedelta(seconds=25, microseconds=48525))
-        >>> float(l)
+        >>> line = LrcLine(start_timedelta=timedelta(seconds=25, microseconds=48525), text='')
+        >>> float(line)
         25048.525
 
         """
@@ -153,7 +158,7 @@ class LrcLine:
 
     def __hash__(self) -> int:
         unique_str = (
-            str(self.start_timedelta)
+            repr(self.start_timedelta)
             + self.text
             + str(self.offset_ms)
             + "".join(self.translations or [])
@@ -174,55 +179,62 @@ class LrcParser:
         lrc_lines: list[LrcLine]
         attributes: list[dict[Literal["name", "value"], str]]
 
-    @classmethod
     def parse(
-        cls,
+        self,
         s: str,
         parse_translations: bool = False,
         translation_divider: str = TRANSLATION_DIVIDER,
     ) -> ParseResult:
         """
-        Parses lyrics from a string.
+        Parse lyrics from a string.
 
-        * If you want to custom the translation divider, please change the DEFAULT_TRANSLATION_DIVIDER variable.
-
-        :param contents: The lyric string, e.g.'[00:01.25]Lyric'.
-        :type contents: str
-        :param parseTranslation: Defaults to False, see examples for details
-        :type parseTranslation: bool, optional
-        :param translationAtLeft: Defaults to False, see examples for details
-        :type translationAtLeft: bool, optional
+        :param s: The lyric string, e.g.'[00:01.25]Lyric'.
+        :type s: str
+        :param parse_translations: Defaults to False, see examples for details
+        :type parse_translations: bool, optional
+        :param translation_divider: Defaults to TRANSLATION_DIVIDER, see examples for details
+        :type translation_divider: str, optional
         :return: A dictionary contains `lyricLines` and `attributes` of the lyric.
         :rtype: dict
 
-        >>> lStr = '[ti: TEST]\\n[ar: 283375]\\n[al: TEST ~AN EXAMPLE FOR YOU~]\\n[by:283375]\\n'
-        >>> lStr += '[00:05.26]Line 1 example\\n[00:07.36]Line 2 example | 翻译示例\\n'
-        >>> lStr += '[00:09.34]换个位置 | Line 3 example\\n'
-        >>> parse(lStr)
-        {"lyricLines": [
-            LyricLine(startTimedelta=..., text='Line 1 example', offsetMs=0),
-            LyricLine(startTimedelta=..., text='Line 2 example | 翻译示例', offsetMs=0),
-            LyricLine(startTimedelta=..., text='[00:09.34]换个位置 | Line 3 example')
-        ], "attributes": [
-            {"name": "ti", "values": "TEST"},
-            {"name": "ar", "values": "283375"},
-            {"name": "al", "values": "TEST ~AN EXAMPLE FOR YOU~"},
-            {"name": "by", "values": "283375"},
-        ]}
+        >>> s = '''[ti: TEST]
+        ... [ar: 283375]
+        ... [al: TEST ~AN EXAMPLE FOR YOU~]
+        ... [by: 283375]
+        ...
+        ... [00:05.26]Line 1 example
+        ... [00:07.36]Line 2 example | 翻译示例
+        ... [00:09.54]Line 3 divider example /// 分隔符示例'''
 
-        >>> parse(lStr, parseTranslation=True)
-        {"lyricLines": [
-            LyricLine(startTimedelta=..., text='Line 1 example', offsetMs=0),
-            LyricLine(startTimedelta=..., text='Line 2 example', offsetMs=0, translation='翻译示例'),
-            LyricLine(startTimedelta=..., text='换个位置', offsetMs=0, translation='Line 3 example')
-        ], "attributes": [...]}
+        >>> LrcParser().parse(s) == {
+        ...     'global_offset': 0,
+        ...     'lrc_lines': [
+        ...         LrcLine(text="Line 1 example", start_timedelta=timedelta(seconds=5, milliseconds=260), ),
+        ...         LrcLine(text="Line 2 example | 翻译示例", start_timedelta=timedelta(seconds=7, milliseconds=360), ),
+        ...         LrcLine(text="Line 3 divider example /// 分隔符示例", start_timedelta=timedelta(seconds=9, milliseconds=540), )
+        ...     ],
+        ...     'attributes': [
+        ...         {'name': 'ti', 'value': ' TEST'},
+        ...         {'name': 'ar', 'value': ' 283375'},
+        ...         {'name': 'al', 'value': ' TEST ~AN EXAMPLE FOR YOU~'},
+        ...         {'name': 'by', 'value': ' 283375'}
+        ...     ]
+        ... }
+        True
 
-        >>> parse(lStr, parseTranslation=True, translationAtLeft=True)
-        {"lyricLines": [
-            LyricLine(startTimedelta=..., text='Line 1 example', offsetMs=0),
-            LyricLine(startTimedelta=..., text='翻译示例', offsetMs=0, translation='Line 2 example'),
-            LyricLine(startTimedelta=..., text='Line 3 example', offsetMs=0, translation='换个位置')
-        ], "attributes": [...]}
+        >>> LrcParser().parse(s, parse_translations=True)['lrc_lines'] == [
+        ...     LrcLine(text="Line 1 example", start_timedelta=timedelta(seconds=5, milliseconds=260)),
+        ...     LrcLine(text="Line 2 example", translations=['翻译示例'], start_timedelta=timedelta(seconds=7, milliseconds=360)),
+        ...     LrcLine(text="Line 3 divider example /// 分隔符示例", start_timedelta=timedelta(seconds=9, milliseconds=540))
+        ... ]
+        True
+
+        >>> LrcParser().parse(s, parse_translations=True, translation_divider=' /// ')['lrc_lines'] == [
+        ...     LrcLine(text="Line 1 example", start_timedelta=timedelta(seconds=5, milliseconds=260)),
+        ...     LrcLine(text="Line 2 example | 翻译示例", start_timedelta=timedelta(seconds=7, milliseconds=360)),
+        ...     LrcLine(text="Line 3 divider example", translations=['分隔符示例'], start_timedelta=timedelta(seconds=9, milliseconds=540))
+        ... ]
+        True
 
         """
         lines = s.splitlines()
@@ -293,33 +305,33 @@ class LrcParser:
 
     def find_duplicate(self, lrc_lines: list[LrcLine]) -> list[list[LrcLine]]:
         """
-        findDuplicate finds duplicate lyrics.
+        find_duplicate finds duplicate lyrics.
 
-        :param lyricLines: A list of LyricLine.
-        :type lyricLines: list
+        :param lrc_lines: A list of LyricLine.
+        :type lrc_lines: list
         :return: A list of duplicate groups, see example for details.
         :rtype: list
 
-        >>> findDuplicate([
-            LyricLine(startTimedelta=datetime.timedelta(seconds=1, milliseconds=589), text='Line 1'),
-            LyricLine(startTimedelta=datetime.timedelta(seconds=1, milliseconds=589), text='Line 2'),
-            LyricLine(startTimedelta=datetime.timedelta(seconds=1, milliseconds=589), text='Line 3'),
-            LyricLine(startTimedelta=datetime.timedelta(seconds=2, milliseconds=589), text='Line 4'),
-            LyricLine(startTimedelta=datetime.timedelta(seconds=2, milliseconds=589), text='Line 5'),
-            LyricLine(startTimedelta=datetime.timedelta(seconds=2, milliseconds=589), text='Line 6'),
-        ])
-        [
-            [
-                LyricLine(startTimedelta=datetime.timedelta(seconds=1, milliseconds=589), text='Line 1'),
-                LyricLine(startTimedelta=datetime.timedelta(seconds=1, milliseconds=589), text='Line 2'),
-                LyricLine(startTimedelta=datetime.timedelta(seconds=1, milliseconds=589), text='Line 3'),
-            ],
-            [
-                LyricLine(startTimedelta=datetime.timedelta(seconds=2, milliseconds=589), text='Line 4'),
-                LyricLine(startTimedelta=datetime.timedelta(seconds=2, milliseconds=589), text='Line 5'),
-                LyricLine(startTimedelta=datetime.timedelta(seconds=2, milliseconds=589), text='Line 6'),
-            ]
-        ]
+        >>> LrcParser().find_duplicate([
+        ...     LrcLine(start_timedelta=timedelta(seconds=1, milliseconds=589), text='Line 1'),
+        ...     LrcLine(start_timedelta=timedelta(seconds=1, milliseconds=589), text='Line 2'),
+        ...     LrcLine(start_timedelta=timedelta(seconds=1, milliseconds=589), text='Line 3'),
+        ...     LrcLine(start_timedelta=timedelta(seconds=2, milliseconds=589), text='Line 4'),
+        ...     LrcLine(start_timedelta=timedelta(seconds=2, milliseconds=589), text='Line 5'),
+        ...     LrcLine(start_timedelta=timedelta(seconds=2, milliseconds=589), text='Line 6'),
+        ... ]) == [
+        ...      [
+        ...          LrcLine(start_timedelta=timedelta(seconds=1, milliseconds=589), text='Line 1'),
+        ...          LrcLine(start_timedelta=timedelta(seconds=1, milliseconds=589), text='Line 2'),
+        ...          LrcLine(start_timedelta=timedelta(seconds=1, milliseconds=589), text='Line 3'),
+        ...      ],
+        ...      [
+        ...          LrcLine(start_timedelta=timedelta(seconds=2, milliseconds=589), text='Line 4'),
+        ...          LrcLine(start_timedelta=timedelta(seconds=2, milliseconds=589), text='Line 5'),
+        ...          LrcLine(start_timedelta=timedelta(seconds=2, milliseconds=589), text='Line 6'),
+        ...      ]
+        ...  ]
+        True
 
         """
 
@@ -336,33 +348,32 @@ class LrcParser:
 
     def combine_translation(self, lrc_lines: list[LrcLine]) -> list[LrcLine]:
         """
-        combineTranslation analyzes the translation of the lyric.
-        * Requires findDuplicate().
+        combine_translation analyzes the translation of the lyric.
 
-        :param lyricLines: A list of LyricLine.
-        :type lyricLines: list
+        :param lrc_lines: A list of LyricLine.
+        :type lrc_lines: list
         :return: Processed list of LyricLine, see example for details.
         :rtype: list
 
-        >>> combineTranslation([
-            LyricLine(startTimedelta=datetime.timedelta(seconds=1, milliseconds=589), text='Line 1'),
-            LyricLine(startTimedelta=datetime.timedelta(seconds=1, milliseconds=589), text='翻译 1'),
-            LyricLine(startTimedelta=datetime.timedelta(seconds=2, milliseconds=589), text='Line 2'),
-            LyricLine(startTimedelta=datetime.timedelta(seconds=2, milliseconds=589), text='翻译 2'),
-            LyricLine(startTimedelta=datetime.timedelta(seconds=2, milliseconds=589), text='これは2行目です'),
-        ])
-        [
-            LyricLine(
-                startTimedelta=datetime.timedelta(seconds=1, milliseconds=589),
-                text='Line 1',
-                offsetMs=0,
-                translation='翻译 1'),
-            LyricLine(
-                startTimedelta=datetime.timedelta(seconds=2,milliseconds=589),
-                text='Line 2',
-                offsetMs=0,
-                translation=['翻译 2', 'これは2行目です'])
-        ]
+        >>> LrcParser().combine_translation([
+        ...     LrcLine(start_timedelta=timedelta(seconds=1, milliseconds=589), text='Line 1'),
+        ...     LrcLine(start_timedelta=timedelta(seconds=1, milliseconds=589), text='翻译 1'),
+        ...     LrcLine(start_timedelta=timedelta(seconds=2, milliseconds=589), text='Line 2'),
+        ...     LrcLine(start_timedelta=timedelta(seconds=2, milliseconds=589), text='翻译 2'),
+        ...     LrcLine(start_timedelta=timedelta(seconds=2, milliseconds=589), text='これは2行目です'),
+        ... ]) == [
+        ...     LrcLine(
+        ...         start_timedelta=timedelta(seconds=1, milliseconds=589),
+        ...         text='Line 1',
+        ...         offset_ms=0,
+        ...         translations=['翻译 1']),
+        ...     LrcLine(
+        ...         start_timedelta=timedelta(seconds=2,milliseconds=589),
+        ...         text='Line 2',
+        ...         offset_ms=0,
+        ...         translations=['翻译 2', 'これは2行目です'])
+        ... ]
+        True
 
         """
         duplicates = self.find_duplicate(lrc_lines)

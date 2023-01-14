@@ -1,7 +1,8 @@
-import pytest
-
-from lrcparser import LrcLine, LrcParser, TRANSLATION_DIVIDER
+import doctest
 from datetime import timedelta
+
+import lrcparser
+from lrcparser import LrcLine, LrcParser, TRANSLATION_DIVIDER
 
 test_LrcLine = LrcLine(
     start_timedelta=timedelta(seconds=5, milliseconds=593),
@@ -85,3 +86,8 @@ class TestParser:
             "But we can change the rules :)",
             "我只是来凑数的",
         ]
+
+class TestDocstring:
+    def test_docstring(self):
+        fail_count, test_count = doctest.testmod(lrcparser)
+        assert fail_count == 0
