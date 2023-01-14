@@ -26,18 +26,11 @@ class LrcLine:
         self,
         start_timedelta: timedelta,
         text: str,
-        offset_ms: int = 0,
         translations: list[str] | None = None,
     ):
         self.start_timedelta = start_timedelta
         self.text = text
-        self.offset_ms = offset_ms
         self.translations = translations
-
-    # This is something like computed(() => ...) in Vue.js, which I like a lot.
-    @property
-    def offset_timedelta(self):
-        return self.start_timedelta + timedelta(milliseconds=self.offset_ms)
 
     def get_time(self) -> dict[Literal["minutes", "seconds", "microseconds"], int]:
         """
@@ -106,7 +99,7 @@ class LrcLine:
         return f"[{time_str}]{self.text}{translation_str}"
 
     def __repr__(self) -> str:
-        return f"LrcLine(start_timedelta={repr(self.start_timedelta)}, text={repr(self.text)}, offset_ms={self.offset_ms}, translations={repr(self.translations)})"
+        return f"LrcLine(start_timedelta={repr(self.start_timedelta)}, text={repr(self.text)}, translations={repr(self.translations)})"
 
     def __str__(self) -> str:
         return self.to_str()
@@ -149,16 +142,20 @@ class LrcLine:
 
     def __hash__(self) -> int:
         unique_str = (
-            repr(self.start_timedelta)
-            + self.text
-            + str(self.offset_ms)
-            + "".join(self.translations or [])
+            repr(self.start_timedelta) + self.text + "".join(self.translations or [])
         )
         return hash(unique_str)
 
     def __eq__(self, other: object) -> bool:
         return (
             self.__hash__() == other.__hash__()
+            if isinstance(other, self.__class__)
+            else False
+        )
+
+    def __lt__(self, other: object) -> bool:
+        return (
+            self.__float__() < other.__float__()
             if isinstance(other, self.__class__)
             else False
         )
@@ -186,7 +183,7 @@ class LrcParser:
         :type parse_translations: bool, optional
         :param translation_divider: Defaults to TRANSLATION_DIVIDER, see examples for details
         :type translation_divider: str, optional
-        :return: A dictionary contains `lyricLines` and `attributes` of the lyric.
+        :return: A dict contains `global_offset`, `lrc_lines` and `attributes` of the lyric.
         :rtype: dict
 
         >>> s = '''[ti: TEST]
@@ -230,7 +227,7 @@ class LrcParser:
 
         """
         lines = s.splitlines()
-        lrc_lines = []
+        lrc_lines: list[LrcLine] = []
         attributes = []
         global_offset = 0
 
@@ -281,23 +278,32 @@ class LrcParser:
                     lrc_lines.append(lrc_line)
 
         if parse_translations:
-            lrc_lines = cls.combine_translation(lrc_lines)
+            original_texts: dict[timedelta, str] = {}
+            translation_texts: dict[timedelta, list[str]] = {}
+            combined_lines = cls.combine_translation(lrc_lines)
+            for line in combined_lines:
+                if line.translations:
+                    original_texts[line.start_timedelta] = line.text
+                    translation_texts[line.start_timedelta] = line.translations
+
+            for line in lrc_lines.copy():
+                if line.start_timedelta in original_texts:
+                    if line.text == original_texts[line.start_timedelta]:
+                        lrc_lines.append(
+                            LrcLine(
+                                start_timedelta=line.start_timedelta,
+                                text=line.text,
+                                translations=translation_texts[line.start_timedelta],
+                            )
+                        )
+                    if line in lrc_lines:
+                        lrc_lines.remove(line)
 
         return {
             "global_offset": global_offset,
-            "lrc_lines": lrc_lines,
+            "lrc_lines": sorted(lrc_lines),
             "attributes": attributes,
         }
-
-    @classmethod
-    def apply_global_offset(
-        cls, lrc_lines: list[LrcLine], offset: int
-    ) -> list[LrcLine]:
-        ret = []
-        for lrc_line in lrc_lines:
-            lrc_line.offset_ms = offset
-            ret.append(lrc_line)
-        return ret
 
     @classmethod
     def find_duplicate(cls, lrc_lines: list[LrcLine]) -> list[list[LrcLine]]:
@@ -384,7 +390,6 @@ class LrcParser:
             lrc_line = LrcLine(
                 start_timedelta=main_lrc_line.start_timedelta,
                 text=main_lrc_line.text,
-                offset_ms=main_lrc_line.offset_ms,
                 translations=[lrc_line.text for lrc_line in duplicate[1:]],
             )
             combined_lrcs.append(lrc_line)

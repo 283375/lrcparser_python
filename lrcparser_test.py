@@ -10,7 +10,6 @@ class TestCase_LrcLine(unittest.TestCase):
     test_LrcLine = LrcLine(
         start_timedelta=timedelta(seconds=5, milliseconds=593),
         text="This is a test line.",
-        offset_ms=50,
         translations=["这是测试。"],
     )
 
@@ -52,7 +51,6 @@ class TestCase_LrcParser(unittest.TestCase):
         expected_lrc_line = LrcLine(
             start_timedelta=timedelta(seconds=28, microseconds=330000),
             text="Line 4 with TRANSLATION! COOL!!!",
-            offset_ms=250,
         )
         self.assertEqual(result["lrc_lines"][3], expected_lrc_line)
         self.assertEqual(
@@ -68,16 +66,6 @@ class TestCase_LrcParser(unittest.TestCase):
                 {"name": "by", "value": "283375"},
                 {"name": "OFFset", "value": "250"},
             ],
-        )
-
-    def test_offset(self):
-        offset_lines = LrcParser.apply_global_offset(
-            result["lrc_lines"], result["global_offset"]
-        )
-        self.assertEqual(offset_lines[0].offset_ms, 250)
-        self.assertEqual(
-            offset_lines[0].offset_timedelta,
-            timedelta(seconds=0, milliseconds=20 + 250),
         )
 
     def test_find_duplicate(self):
