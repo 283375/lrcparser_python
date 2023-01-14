@@ -16,8 +16,6 @@ class LrcLine:
     :type start_timedelta: timedelta
     :param text: The text of the lyric. [00:01.26]`Lyric text`
     :type text: str
-    :param offset_ms: The offset of the lyric line, defaults to `0`
-    :type offset_ms: int, optional
     :param translations: The translations, defaults to None
     :type translations: list or None, optional
     """
@@ -369,12 +367,10 @@ class LrcParser:
         ...     LrcLine(
         ...         start_timedelta=timedelta(seconds=1, milliseconds=589),
         ...         text='Line 1',
-        ...         offset_ms=0,
         ...         translations=['翻译 1']),
         ...     LrcLine(
         ...         start_timedelta=timedelta(seconds=2,milliseconds=589),
         ...         text='Line 2',
-        ...         offset_ms=0,
         ...         translations=['翻译 2', 'これは2行目です'])
         ... ]
         True
