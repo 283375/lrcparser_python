@@ -7,7 +7,7 @@ ATTR_REGEX = r"\[(?P<name>[^\d]+):(?P<value>.+)\]"
 TRANSLATION_DIVIDER = " | "
 
 
-class LyricLine:
+class LrcLine:
     """
     Represents a lyric line
 
@@ -39,7 +39,7 @@ class LyricLine:
     def offset_timedelta(self):
         return self.start_timedelta + timedelta(milliseconds=self.offset_ms)
 
-    def get_time(self) -> dict:
+    def get_time(self) -> dict[Literal["minutes", "seconds", "microseconds"], int]:
         """
         getTime returns a dictionary that contains the time of the lyric.
 
@@ -171,11 +171,12 @@ class LyricLine:
 class LrcParser:
     class ParseResult(TypedDict):
         global_offset: int
-        lyric_lines: list[LyricLine]
+        lrc_lines: list[LrcLine]
         attributes: list[dict[Literal["name", "value"], str]]
 
+    @classmethod
     def parse(
-        self,
+        cls,
         s: str,
         parse_translations: bool = False,
         translation_divider: str = TRANSLATION_DIVIDER,
@@ -262,14 +263,14 @@ class LrcParser:
                 if parse_translations:
                     splited_text = orig_text.split(translation_divider)
                     lrc_lines.append(
-                        LyricLine(
+                        LrcLine(
                             start_timedelta=start_timedelta,
                             text=splited_text[0],
                             translations=splited_text[1:] or None,
                         )
                     )
                 else:
-                    lrc_line = LyricLine(
+                    lrc_line = LrcLine(
                         start_timedelta=start_timedelta,
                         text=orig_text,
                     )
@@ -277,20 +278,20 @@ class LrcParser:
 
         return {
             "global_offset": global_offset,
-            "lyric_lines": lrc_lines,
+            "lrc_lines": lrc_lines,
             "attributes": attributes,
         }
 
     def apply_global_offset(
-        self, lyric_lines: list[LyricLine], offset: int
-    ) -> list[LyricLine]:
+        self, lrc_lines: list[LrcLine], offset: int
+    ) -> list[LrcLine]:
         ret = []
-        for lyric_line in lyric_lines:
-            lyric_line.offset_ms = offset
-            ret.append(lyric_line)
+        for lrc_line in lrc_lines:
+            lrc_line.offset_ms = offset
+            ret.append(lrc_line)
         return ret
 
-    def find_duplicate(self, lyric_lines: list[LyricLine]) -> list[list[LyricLine]]:
+    def find_duplicate(self, lrc_lines: list[LrcLine]) -> list[list[LrcLine]]:
         """
         findDuplicate finds duplicate lyrics.
 
@@ -322,18 +323,18 @@ class LrcParser:
 
         """
 
-        timedelta_dict: dict[timedelta, list[LyricLine]] = {}
+        timedelta_dict: dict[timedelta, list[LrcLine]] = {}
 
-        for lyric_line in lyric_lines:
-            if timedelta_dict.get(lyric_line.start_timedelta) is None:
-                timedelta_dict[lyric_line.start_timedelta] = [lyric_line]
+        for lrc_line in lrc_lines:
+            if timedelta_dict.get(lrc_line.start_timedelta) is None:
+                timedelta_dict[lrc_line.start_timedelta] = [lrc_line]
             else:
-                timedelta_dict[lyric_line.start_timedelta].append(lyric_line)
+                timedelta_dict[lrc_line.start_timedelta].append(lrc_line)
 
         timedelta_dict = dict(filter(lambda x: len(x[1]) > 1, timedelta_dict.items()))
         return list(dict(sorted(timedelta_dict.items(), key=lambda i: i[0])).values())
 
-    def combine_translation(self, lyric_lines: list[LyricLine]) -> list[LyricLine]:
+    def combine_translation(self, lrc_lines: list[LrcLine]) -> list[LrcLine]:
         """
         combineTranslation analyzes the translation of the lyric.
         * Requires findDuplicate().
@@ -364,19 +365,19 @@ class LrcParser:
         ]
 
         """
-        duplicates = self.find_duplicate(lyric_lines)
+        duplicates = self.find_duplicate(lrc_lines)
         if len(duplicates) == 0:
-            return lyric_lines
+            return lrc_lines
 
         combined_lrcs = []
         for duplicate in duplicates:
-            main_lyric_line = duplicate[0]
-            lyric_line = LyricLine(
-                start_timedelta=main_lyric_line.start_timedelta,
-                text=main_lyric_line.text,
-                offset_ms=main_lyric_line.offset_ms,
-                translations=[lyric_line.text for lyric_line in duplicate[1:]],
+            main_lrc_line = duplicate[0]
+            lrc_line = LrcLine(
+                start_timedelta=main_lrc_line.start_timedelta,
+                text=main_lrc_line.text,
+                offset_ms=main_lrc_line.offset_ms,
+                translations=[lrc_line.text for lrc_line in duplicate[1:]],
             )
-            combined_lrcs.append(lyric_line)
+            combined_lrcs.append(lrc_line)
 
         return combined_lrcs
