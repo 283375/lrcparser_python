@@ -170,8 +170,9 @@ class LrcParser:
         lrc_lines: list[LrcLine]
         attributes: list[dict[Literal["name", "value"], str]]
 
+    @classmethod
     def parse(
-        self,
+        cls,
         s: str,
         parse_translations: bool = False,
         translation_divider: str = TRANSLATION_DIVIDER,
@@ -197,7 +198,7 @@ class LrcParser:
         ... [00:07.36]Line 2 example | 翻译示例
         ... [00:09.54]Line 3 divider example /// 分隔符示例'''
 
-        >>> LrcParser().parse(s) == {
+        >>> LrcParser.parse(s) == {
         ...     'global_offset': 0,
         ...     'lrc_lines': [
         ...         LrcLine(text="Line 1 example", start_timedelta=timedelta(seconds=5, milliseconds=260), ),
@@ -213,14 +214,14 @@ class LrcParser:
         ... }
         True
 
-        >>> LrcParser().parse(s, parse_translations=True)['lrc_lines'] == [
+        >>> LrcParser.parse(s, parse_translations=True)['lrc_lines'] == [
         ...     LrcLine(text="Line 1 example", start_timedelta=timedelta(seconds=5, milliseconds=260)),
         ...     LrcLine(text="Line 2 example", translations=['翻译示例'], start_timedelta=timedelta(seconds=7, milliseconds=360)),
         ...     LrcLine(text="Line 3 divider example /// 分隔符示例", start_timedelta=timedelta(seconds=9, milliseconds=540))
         ... ]
         True
 
-        >>> LrcParser().parse(s, parse_translations=True, translation_divider=' /// ')['lrc_lines'] == [
+        >>> LrcParser.parse(s, parse_translations=True, translation_divider=' /// ')['lrc_lines'] == [
         ...     LrcLine(text="Line 1 example", start_timedelta=timedelta(seconds=5, milliseconds=260)),
         ...     LrcLine(text="Line 2 example | 翻译示例", start_timedelta=timedelta(seconds=7, milliseconds=360)),
         ...     LrcLine(text="Line 3 divider example", translations=['分隔符示例'], start_timedelta=timedelta(seconds=9, milliseconds=540))
@@ -279,14 +280,18 @@ class LrcParser:
                     )
                     lrc_lines.append(lrc_line)
 
+        if parse_translations:
+            lrc_lines = cls.combine_translation(lrc_lines)
+
         return {
             "global_offset": global_offset,
             "lrc_lines": lrc_lines,
             "attributes": attributes,
         }
 
+    @classmethod
     def apply_global_offset(
-        self, lrc_lines: list[LrcLine], offset: int
+        cls, lrc_lines: list[LrcLine], offset: int
     ) -> list[LrcLine]:
         ret = []
         for lrc_line in lrc_lines:
@@ -294,7 +299,8 @@ class LrcParser:
             ret.append(lrc_line)
         return ret
 
-    def find_duplicate(self, lrc_lines: list[LrcLine]) -> list[list[LrcLine]]:
+    @classmethod
+    def find_duplicate(cls, lrc_lines: list[LrcLine]) -> list[list[LrcLine]]:
         """
         find_duplicate finds duplicate lyrics.
 
@@ -303,7 +309,7 @@ class LrcParser:
         :return: A list of duplicate groups, see example for details.
         :rtype: list
 
-        >>> LrcParser().find_duplicate([
+        >>> LrcParser.find_duplicate([
         ...     LrcLine(start_timedelta=timedelta(seconds=1, milliseconds=589), text='Line 1'),
         ...     LrcLine(start_timedelta=timedelta(seconds=1, milliseconds=589), text='Line 2'),
         ...     LrcLine(start_timedelta=timedelta(seconds=1, milliseconds=589), text='Line 3'),
@@ -337,7 +343,8 @@ class LrcParser:
         timedelta_dict = dict(filter(lambda x: len(x[1]) > 1, timedelta_dict.items()))
         return list(dict(sorted(timedelta_dict.items(), key=lambda i: i[0])).values())
 
-    def combine_translation(self, lrc_lines: list[LrcLine]) -> list[LrcLine]:
+    @classmethod
+    def combine_translation(cls, lrc_lines: list[LrcLine]) -> list[LrcLine]:
         """
         combine_translation analyzes the translation of the lyric.
 
@@ -346,7 +353,7 @@ class LrcParser:
         :return: Processed list of LyricLine, see example for details.
         :rtype: list
 
-        >>> LrcParser().combine_translation([
+        >>> LrcParser.combine_translation([
         ...     LrcLine(start_timedelta=timedelta(seconds=1, milliseconds=589), text='Line 1'),
         ...     LrcLine(start_timedelta=timedelta(seconds=1, milliseconds=589), text='翻译 1'),
         ...     LrcLine(start_timedelta=timedelta(seconds=2, milliseconds=589), text='Line 2'),
@@ -367,7 +374,7 @@ class LrcParser:
         True
 
         """
-        duplicates = self.find_duplicate(lrc_lines)
+        duplicates = cls.find_duplicate(lrc_lines)
         if len(duplicates) == 0:
             return lrc_lines
 

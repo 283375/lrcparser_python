@@ -43,9 +43,8 @@ class TestCase_LrcLine(unittest.TestCase):
         self.assertEqual(float(self.test_LrcLine), 5593.000)
 
 
-parser = LrcParser()
 with open("example.lrc", "r", encoding="utf-8") as lrc_file:
-    result = parser.parse(lrc_file.read())
+    result = LrcParser.parse(lrc_file.read())
 
 
 class TestCase_LrcParser(unittest.TestCase):
@@ -72,7 +71,7 @@ class TestCase_LrcParser(unittest.TestCase):
         )
 
     def test_offset(self):
-        offset_lines = parser.apply_global_offset(
+        offset_lines = LrcParser.apply_global_offset(
             result["lrc_lines"], result["global_offset"]
         )
         self.assertEqual(offset_lines[0].offset_ms, 250)
@@ -82,7 +81,7 @@ class TestCase_LrcParser(unittest.TestCase):
         )
 
     def test_find_duplicate(self):
-        dups = parser.find_duplicate(result["lrc_lines"])
+        dups = LrcParser.find_duplicate(result["lrc_lines"])
         self.assertEqual(dups[0][0].text, "Line 4 with TRANSLATION! COOL!!!")
         self.assertEqual(
             dups[0][1].start_timedelta, timedelta(seconds=28, microseconds=330000)
@@ -90,7 +89,7 @@ class TestCase_LrcParser(unittest.TestCase):
         self.assertEqual(dups[1][0].text, "Sad because secs < 60")
 
     def test_combine_translation(self):
-        translations = parser.combine_translation(result["lrc_lines"])
+        translations = LrcParser.combine_translation(result["lrc_lines"])
         self.assertEqual(translations[0].text, "Line 4 with TRANSLATION! COOL!!!")
         self.assertEqual(translations[0].translations, ["这行有翻译！真他妈的酷！！！"])
         self.assertEqual(translations[1].text, "Sad because secs < 60")
