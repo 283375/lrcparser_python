@@ -3,7 +3,7 @@ from datetime import timedelta
 from typing import Literal, TypedDict
 
 LRC_REGEX = r"(?P<time>\[(?P<minutes>\d{2}):(?P<seconds>\d{2})\.(?P<milliseconds>\d{2,3})\])(?P<text>.*)"
-ATTR_REGEX = r"\[(?P<name>[^\d]+):(?P<value>.+)\]"
+ATTR_REGEX = r"\[(?P<name>[^\d]+):[\x20]*(?P<value>.+)\]"
 TRANSLATION_DIVIDER = " | "
 
 
@@ -214,10 +214,10 @@ class LrcParser:
         ...         LrcLine(text="Line 3 divider example /// 分隔符示例", start_timedelta=timedelta(seconds=9, milliseconds=540), )
         ...     ],
         ...     'attributes': [
-        ...         {'name': 'ti', 'value': ' TEST'},
-        ...         {'name': 'ar', 'value': ' 283375'},
-        ...         {'name': 'al', 'value': ' TEST ~AN EXAMPLE FOR YOU~'},
-        ...         {'name': 'by', 'value': ' 283375'}
+        ...         {'name': 'ti', 'value': 'TEST'},
+        ...         {'name': 'ar', 'value': '283375'},
+        ...         {'name': 'al', 'value': 'TEST ~AN EXAMPLE FOR YOU~'},
+        ...         {'name': 'by', 'value': '283375'}
         ...     ]
         ... }
         True
