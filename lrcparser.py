@@ -106,16 +106,7 @@ class LrcLine:
         return f"[{time_str}]{self.text}{translation_str}"
 
     def __repr__(self) -> str:
-        return_str = "LrcLine("
-        if self.text:
-            return_str += f'text="{self.text}", '
-        if self.start_timedelta:
-            return_str += f"start_timedelta={repr(self.start_timedelta)}, "
-        if self.offset_ms:
-            return_str += f"offsetMs={self.offset_ms}, "
-        if self.translations:
-            return_str += f'translation="{self.translations}", '
-        return f"{return_str})"
+        return f"LrcLine(start_timedelta={repr(self.start_timedelta)}, text={self.text}, offset_ms={self.offset_ms}, translations={self.translations})"
 
     def __str__(self) -> str:
         return self.to_str()
