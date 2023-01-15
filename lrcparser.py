@@ -247,10 +247,7 @@ class LrcParser:
             if lrc_re_result:
                 # adapt lyrics like [01:02.345678] (will this kind of lyric even exist?)
                 milliseconds = lrc_re_result["milliseconds"]
-                if len(milliseconds) <= 3:
-                    microseconds = milliseconds.ljust(6, "0")
-                else:
-                    microseconds = milliseconds
+                microseconds = milliseconds.ljust(6, "0")
 
                 start_timedelta = timedelta(
                     minutes=int(lrc_re_result["minutes"]),
