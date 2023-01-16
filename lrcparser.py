@@ -163,7 +163,7 @@ class LrcParser:
     class ParseResult(TypedDict):
         global_offset: int
         lrc_lines: list[LrcLine]
-        attributes: list[dict[Literal["name", "value"], str]]
+        attributes: dict[str, str]
 
     @classmethod
     def parse(
@@ -188,24 +188,26 @@ class LrcParser:
         ... [ar: 283375]
         ... [al: TEST ~AN EXAMPLE FOR YOU~]
         ... [by: 283375]
+        ... [offset: 375]
         ...
         ... [00:05.26]Line 1 example
         ... [00:07.36]Line 2 example | 翻译示例
         ... [00:09.54]Line 3 divider example /// 分隔符示例'''
 
         >>> LrcParser.parse(s) == {
-        ...     'global_offset': 0,
+        ...     'global_offset': 375,
         ...     'lrc_lines': [
         ...         LrcLine(text="Line 1 example", start_timedelta=timedelta(seconds=5, milliseconds=260), ),
         ...         LrcLine(text="Line 2 example | 翻译示例", start_timedelta=timedelta(seconds=7, milliseconds=360), ),
         ...         LrcLine(text="Line 3 divider example /// 分隔符示例", start_timedelta=timedelta(seconds=9, milliseconds=540), )
         ...     ],
-        ...     'attributes': [
-        ...         {'name': 'ti', 'value': 'TEST'},
-        ...         {'name': 'ar', 'value': '283375'},
-        ...         {'name': 'al', 'value': 'TEST ~AN EXAMPLE FOR YOU~'},
-        ...         {'name': 'by', 'value': '283375'}
-        ...     ]
+        ...     'attributes': {
+        ...         'ti': 'TEST',
+        ...         'ar': '283375',
+        ...         'al': 'TEST ~AN EXAMPLE FOR YOU~',
+        ...         'by': '283375',
+        ...         'offset': '375',
+        ...     }
         ... }
         True
 
@@ -226,7 +228,7 @@ class LrcParser:
         """
         lines = s.splitlines()
         lrc_lines: list[LrcLine] = []
-        attributes = []
+        attributes = {}
         global_offset = 0
 
         for line in lines:
@@ -234,18 +236,16 @@ class LrcParser:
             lrc_re_result = re.match(LRC_REGEX, line)
 
             if attribute_re_result:
-                if attribute_re_result["name"].lower() == "offset":
-                    global_offset = int(attribute_re_result["value"])
+                attr_name = attribute_re_result["name"].lower()
+                attr_value = attribute_re_result["value"]
 
-                attributes.append(
-                    {
-                        "name": attribute_re_result["name"],
-                        "value": attribute_re_result["value"],
-                    }
-                )
+                if attr_name == "offset":
+                    global_offset = int(attr_value)
+
+                attributes[attr_name] = attr_value
 
             if lrc_re_result:
-                # adapt lyrics like [01:02.345678] (will this kind of lyric even exist?)
+                # adapt lyrics like [01:02.345678]
                 milliseconds = lrc_re_result["milliseconds"]
                 microseconds = milliseconds.ljust(6, "0")
 
@@ -266,11 +266,12 @@ class LrcParser:
                         )
                     )
                 else:
-                    lrc_line = LrcLine(
-                        start_timedelta=start_timedelta,
-                        text=orig_text,
+                    lrc_lines.append(
+                        LrcLine(
+                            start_timedelta=start_timedelta,
+                            text=orig_text,
+                        )
                     )
-                    lrc_lines.append(lrc_line)
 
         if parse_translations:
             original_texts: dict[timedelta, str] = {}

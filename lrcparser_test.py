@@ -57,15 +57,15 @@ class TestCase_LrcParser(unittest.TestCase):
             result["lrc_lines"][5].start_timedelta,
             result["lrc_lines"][6].start_timedelta,
         )
-        self.assertListEqual(
+        self.assertDictEqual(
             result["attributes"],
-            [
-                {"name": "ti", "value": "test_lyric"},
-                {"name": "ar", "value": "283375"},
-                {"name": "al", "value": "TEST ~エラーを回避するための最良の方法~"},
-                {"name": "by", "value": "283375"},
-                {"name": "OFFset", "value": "250"},
-            ],
+            {
+                "ti": "test_lyric",
+                "ar": "283375",
+                "al": "TEST ~エラーを回避するための最良の方法~",
+                "by": "283375",
+                "offset": "250",
+            },
         )
 
     def test_find_duplicate(self):
