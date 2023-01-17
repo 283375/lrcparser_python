@@ -1,6 +1,6 @@
 import re
 from datetime import timedelta
-from typing import Literal, TypedDict
+from typing import Literal, TypedDict, Protocol, Any
 
 LRC_REGEX = r"(?P<time>\[(?P<minutes>\d{2}):(?P<seconds>\d{2})\.(?P<milliseconds>\d{2,3})\])(?P<text>.*)"
 ATTR_REGEX = r"\[(?P<name>[^\d]+):[\x20]*(?P<value>.+)\]"
@@ -54,10 +54,10 @@ class LrcLine:
 
     def to_str(
         self,
-        ms_digits: int = 2,
+        ms_digits: Literal[2, 3] = 2,
         translations: bool = False,
         translation_divider: str = TRANSLATION_DIVIDER,
-    ) -> str:
+    ) -> str:  # sourcery skip: use-fstring-for-formatting
         """
         to_str returns the string format of the lyric.
 
@@ -77,24 +77,27 @@ class LrcLine:
         ... )
         >>> line.to_str()
         '[00:25.47]Line 1'
+        >>> line.to_str(ms_digits=3, translations=True)
+        '[00:25.478]Line 1 | 行 1'
         >>> line.to_str(ms_digits=3, translations=True, translation_divider='///')
         '[00:25.478]Line 1///行 1'
+        >>> line.to_str(translations=True, translation_divider='\\n')
+        '[00:25.47]Line 1\\n[00:25.47]行 1'
 
         """
         time = self.get_time()
-        time_str = "{}:{}.{}".format(
-            str(time["minutes"]).zfill(2),
-            str(time["seconds"]).zfill(2),
-            str(time["microseconds"] // int("1".ljust(7 - ms_digits, "0"))).rjust(
-                ms_digits, "0"
-            ),
+        time_str = "[{}:{}.{}]".format(
+            str(time["minutes"]).rjust(2, "0"),
+            str(time["seconds"]).rjust(2, "0"),
+            str(time["microseconds"])[:ms_digits],
         )
-        translation_str = ""
+        text_list = [self.text]
 
         if translations and self.translations:
-            for translation in self.translations:
-                translation_str += f"{translation_divider}{translation}"
-        return f"[{time_str}]{self.text}{translation_str}"
+            text_list += self.translations
+            text_list = translation_divider.join(text_list).split("\n")
+
+        return "\n".join(f"{time_str}{text}" for text in text_list)
 
     def __repr__(self) -> str:
         return f"LrcLine(start_timedelta={repr(self.start_timedelta)}, text={repr(self.text)}, translations={repr(self.translations)})"
@@ -389,3 +392,53 @@ class LrcParser:
             combined_lrcs.append(lrc_line)
 
         return combined_lrcs
+
+
+class SupportsWrite(Protocol):
+    def write(self, s: str) -> Any:
+        ...
+
+
+class LrcFile:
+    def __init__(
+        self,
+        lrc_lines: list[LrcLine],
+        attributes: dict[str, str] | None = None,
+        offset: int | None = None,
+    ):
+        if attributes is None:
+            attributes = {}
+        self.lrc_lines = lrc_lines
+        self.attributes = attributes
+
+        if offset is None:
+            for key in attributes.keys():
+                if key.lower() == "offset":
+                    self.offset = int(attributes[key])
+        else:
+            self.offset = offset or 0
+
+    def to_str(
+        self,
+        ms_digits: Literal[2, 3] = 2,
+        translations: bool = True,
+        translation_divider: str = TRANSLATION_DIVIDER,
+    ):
+        lrc_lines = sorted(self.lrc_lines)
+
+        return "{}\n{}".format(
+            "\n".join(
+                f"[{key}:{value}]" for key, value in self.attributes.items()
+            ),
+            "\n".join(
+                line.to_str(
+                    ms_digits=ms_digits,
+                    translations=translations,
+                    translation_divider=translation_divider,
+                )
+                for line in lrc_lines
+            ),
+        )
+
+    def write_to(self, fp: SupportsWrite):
+        pass

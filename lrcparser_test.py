@@ -30,10 +30,8 @@ class TestCase_LrcLine(unittest.TestCase):
             f"[00:05.593]This is a test line.{TRANSLATION_DIVIDER}这是测试。",
         )
         self.assertEqual(
-            self.test_LrcLine.to_str(
-                ms_digits=5, translations=True, translation_divider=" /|\\"
-            ),
-            "[00:05.59300]This is a test line. /|\\这是测试。",
+            self.test_LrcLine.to_str(translations=True, translation_divider=" /|\\"),
+            "[00:05.59]This is a test line. /|\\这是测试。",
         )
 
     def test_format_functions(self):
