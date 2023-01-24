@@ -1,0 +1,33 @@
+:root {
+  --primary-color-base: #27a6e5;
+
+  --primary-color-lighten-1: #50c2f2;
+  --primary-color-lighten-2: #7ddcff;
+  --primary-color-lighten-3: #a6eaff;
+  --primary-color-lighten-4: #cff5ff;
+  --primary-color-lighten-5: #f0fcff;
+
+  --primary-color-darken-1: #1782bf;
+  --primary-color-darken-2: #0b6099;
+  --primary-color-darken-3: #024273;
+  --primary-color-darken-4: #01294d;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+
+  margin: 0;
+  padding: 0;
+
+  background: linear-gradient(
+    30deg,
+    var(--primary-color-darken-3),
+    var(--primary-color-darken-4)
+  );
+  color: var(--primary-color-lighten-3);
+}
+
+a {
+  color: var(--primary-color-lighten-1);
+}

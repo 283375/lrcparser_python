@@ -1,0 +1,31 @@
+.admonition {
+  padding: 0.3rem 1rem;
+  width: 90%;
+
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 10px;
+}
+
+.admonition > .admonition-title {
+  position: relative;
+  width: max-content;
+  font-weight: bold;
+  margin-block: 0;
+  margin-inline: 0;
+  padding: 1em 0;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+}
+
+.admonition.info {
+  background-color: rgba(0, 128, 153, 0.28);
+  border-color: #00d5ff;
+  color: #00d5ff;
+}
+
+.admonition.warning {
+  background: rgba(153, 89, 0, 0.28);
+  border-color: #ffbf66;
+  color: #ffbf66;
+}

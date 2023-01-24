@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+  .error {
+    font-size: 1.5rem;
+  }
+
+  .error > p {
+    margin: 0.5em 0;
+  }
+
+  .error .error-title {
+    margin: 1rem 0;
+    font-size: 5rem;
+  }
+</style>
+
+<div class="error">
+  <p class="error-title">404</p>
+
+  <p><a
+    style="cursor: pointer; text-decoration: underline"
+    onclick="window.history.back()"
+  >Go back</a> if you feel lost,
+  </p>
+  <p>or <a href="{{ config.repo_url }}/issues/new">report an issue</a> on {{ config.repo_name }}.</p>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+pre code {
+  border: none;
+  border-radius: none;
+}
+
+pre[class*='language-'] {
+  width: calc(95% - 3.8em);
+  border-radius: 10px;
+
+  background-color: #01294d;
+}
+
+code {
+  font-family: Fira Code, Consolas, sans-serif;
+  font-size: 0.85em;
+  padding: 0.07em 0.15em;
+  line-height: inherit;
+  border: 1px solid rgba(125, 220, 255, 0.5);
+  border-radius: 3px;
+  background: rgba(207, 245, 255, 0.07);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}

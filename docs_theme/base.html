@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/normalize.css@8.0.1/normalize.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/prismjs@1.29.0/themes/prism-tomorrow.min.css"
+    />
+    <link rel="stylesheet" href="/css/prism.css" />
+    <link rel="stylesheet" href="/css/main.css" />
+    <link rel="stylesheet" href="/css/layout.css" />
+    <link rel="stylesheet" href="/css/markdown.css" />
+    <title>
+      {% if page.title %}{{ page.title }} - {% endif %}{{ config.site_name }}
+    </title>
+  </head>
+
+  <body>
+    <div style="display: flex">
+      {% if nav|length>1 %}
+      <nav id="nav">
+        {% for nav_item in nav %}
+          <div class="nav-item {% if nav_item.active %}nav-active{% endif %}">
+          {% if nav_item.children %}
+            <span class="nav-title">{{ nav_item.title }}</span>
+            {% for nav_item_children in nav_item.children %}
+              <a
+                class="nav-link {% if nav_item.active %}nav-active{% endif %}"
+                href="{{ nav_item_children.url|url }}"
+              >{{ nav_item_children.title }}</a>
+            {% endfor %}
+          {% else %}
+            <a
+              class="nav-title nav-link {% if nav_item.active %}nav-active{% endif %}"
+              href="{{ nav_item.url|url }}"
+            >{{ nav_item.title }}</a>
+          {% endif %}
+          </div>
+        {% endfor %}
+        <div class="nav-empty-space"></div>
+        <div class="nav-footer">
+          <span>MkDocs {{ mkdocs_version }}</span><br>
+          <span>{{ build_date_utc.strftime("%Y-%m-%d %H:%M:%S%z") }}</span>
+
+          {% if "i18n" in config.plugins %}
+            <div class="nav-lang-switch">
+              {% for lang, display in config.plugins.i18n.config.languages.items() -%}
+                <a href="/{{ lang }}/">{{ display.name }}</a>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </nav>
+      {% endif %}
+
+      <div id="mask">
+        <div id="content">
+          {% block content %}{{ page.content }}{% endblock %}
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/prismjs@1.29.0/components/prism-core.min.js"></script>
+    <script src="https://unpkg.com/prismjs@1.29.0/components/prism-python.min.js"></script>
+  </body>
+</html>

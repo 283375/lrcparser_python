@@ -1,0 +1,35 @@
+site_name: lrcparser
+repo_url: https://github.com/283375/lrcparser_python
+
+nav:
+    - lrcparser: index.md
+    - Concepts: concepts.md
+
+theme:
+    name: null
+    custom_dir: 'docs_theme/'
+    static_templates:
+        - 404.html
+
+watch:
+    - docs_theme
+
+markdown_extensions:
+    - admonition
+
+plugins:
+    - i18n:
+        default_language: zh_CN
+        # default_language_only: true
+        docs_structure: folder
+        material_alternate: false
+        languages:
+            en:
+                name: English
+                build: true
+            zh_CN:
+                name: 简体中文
+                build: true
+        nav_translations:
+            zh_CN:
+                Concepts: 概念
