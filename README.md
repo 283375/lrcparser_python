@@ -23,67 +23,69 @@ then just keep using it, thank you for your support :)
 
 ```lrc
 [ti:test_lyric]
-[ar:283375]
-[al:TEST ~エラーを回避するための最良の方法~]
+[al:TEST ~AVOIDING ERRORS~]
 [by:283375]
-[OFFset:250]
+[offset:250]
 
 [00:00.02]Line 1
 [00:00.28]Line 2
 [00:02.83]Line 3
-[00:28.33]Line 4 with TRANSLATION! COOL!!!
-[00:28.33]这行有翻译！真他妈的酷！！！
-[03:23.37]Sad because secs < 60
-[02:83.37]But we can change the rules :)
-[03:23.37]我只是来凑数的
+[00:28.33]Line 4 with translation | 一般大家都这么打翻译
+[00:28.33]可惜我更喜欢换行
+[00:28.33]你说得对，但是《lrcparser》是由……
 [28:33.75]Line 6
 ```
 
 ```py
-from lrcparser import LrcParser
-from datetime import timedelta
+from lrcparser import *
 
 with open('example.lrc', 'r', encoding='utf-8') as lrc_file:
     parsed = LrcParser.parse(lrc_file.read(), parse_translations=True)
-    global_offset, lrc_lines, attributes = parsed.values()
+    offset, lrc_lines, attributes = parsed.values()
 
->>> global_offset
+>>> offset
 250
 
 >>> lrc_lines
 [
     LrcLine(
-        start_timedelta=datetime.timedelta(microseconds=20000),
-        text="Line 1", translations=None,
+        start_time=LrcTime(0, 0, 20),
+        text=LrcText(LrcTextSegment(LrcTime(0, 0, 20), "Line 1")),
+        translations=None,
     ),
     LrcLine(
-        start_timedelta=datetime.timedelta(microseconds=280000),
-        text="Line 2", translations=None,
+        start_time=LrcTime(0, 0, 280),
+        text=LrcText(LrcTextSegment(LrcTime(0, 0, 280), "Line 2")),
+        translations=None,
     ),
     LrcLine(
-        start_timedelta=datetime.timedelta(seconds=2, microseconds=830000),
-        text="Line 3", translations=None,
+        start_time=LrcTime(0, 2, 830),
+        text=LrcText(LrcTextSegment(LrcTime(0, 2, 830), "Line 3")),
+        translations=None,
     ),
     LrcLine(
-        start_timedelta=datetime.timedelta(seconds=28, microseconds=330000),
-        text="Line 4 with TRANSLATION! COOL!!!", translations=["这行有翻译！真他妈的酷！！！"],
+        start_time=LrcTime(0, 28, 330),
+        text=LrcText(
+            LrcTextSegment(LrcTime(0, 28, 330), "Line 4 with translation")
+        ),
+        translations=[
+            LrcText(LrcTextSegment(LrcTime(0, 28, 330), "一般大家都这么打翻译")),
+            LrcText(LrcTextSegment(LrcTime(0, 28, 330), "可惜我更喜欢换行")),
+            LrcText(LrcTextSegment(LrcTime(0, 28, 330), "你说得对，但是《lrcparser》是由……")),
+        ],
     ),
     LrcLine(
-        start_timedelta=datetime.timedelta(seconds=203, microseconds=370000),
-        text="Sad because secs < 60", translations=["But we can change the rules :)", "我只是来凑数的"],
-    ),
-    LrcLine(
-        start_timedelta=datetime.timedelta(seconds=1713, microseconds=750000),
-        text="Line 6", translations=None,
+        start_time=LrcTime(28, 33, 750),
+        text=LrcText(LrcTextSegment(LrcTime(28, 33, 750), "Line 6")),
+        translations=None,
     ),
 ]
 
 >>> attributes
-[
-    {'name': 'ti', 'value': 'test_lyric'},
-    {'name': 'ar', 'value': '283375'},
-    {'name': 'al', 'value': 'TEST ~エラーを回避するための最良の方法~'},
-    {'name': 'by', 'value': '283375'}
-]
-
+{
+    "ti": "test_lyric",
+    "al": "TEST ~AVOIDING ERRORS~",
+    "by": "283375",
+    "offset": "250",
+}
 ```
