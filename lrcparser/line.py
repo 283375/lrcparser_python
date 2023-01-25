@@ -78,7 +78,7 @@ class LrcLine:
 
     def __int__(self) -> int:
         """
-        __int__ returns the total seconds of the lyric start time.
+        __int__ returns the seconds of the lyric start time.
 
         >>> line = LrcLine(start_time=LrcTime(0, 25, 485), text='')
         >>> int(line)
@@ -89,7 +89,7 @@ class LrcLine:
 
     def __float__(self) -> float:
         """
-        __float__ returns the microseconds of the lyric start time.
+        __float__ returns the seconds (including microseconds, in decimal form) of the lyric start time.
 
         >>> line = LrcLine(LrcTime(0, 25, 48525, microsecond=True), text='')
         >>> float(line)

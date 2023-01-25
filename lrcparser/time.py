@@ -27,11 +27,23 @@ class LrcTime:
         if re_match is None:
             raise ValueError(f"Cannot find timestamp in '{s}'.")
         try:
-            return LrcTimeTuple(
-                int(re_match["min"]),
-                int(re_match["sec"]),
-                int(re_match["ms"].ljust(6, "0")),
+            minutes = int(re_match["min"])
+            seconds = int(re_match["sec"])
+            microseconds = int(re_match["ms"].ljust(6, "0"))
+
+            time_tuple = cls.get_time_from_timedelta(
+                timedelta(
+                    minutes=minutes,
+                    seconds=seconds,
+                    microseconds=microseconds,
+                )
             )
+
+            if seconds >= 60 or microseconds > 999999:
+                # TODO: use log warning here
+                print(f"Got invalid timestamp {s}, converting to {str(cls(time_tuple))}")
+
+            return time_tuple
 
         except IndexError as e:
             raise ValueError(f"Cannot find timestamp in '{s}'.") from e
@@ -107,7 +119,9 @@ class LrcTime:
         return self.to_str()
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({repr(self.__tuple__())})"
+        if self.microseconds % 1000 == 0:
+            return f"{self.__class__.__name__}({self.minutes}, {self.seconds}, {self.microseconds // 1000})"
+        return f"{self.__class__.__name__}({self.minutes}, {self.seconds}, {self.microseconds}, microsecond=True)"
 
     def __tuple__(self) -> tuple[int, int, int]:
         return (self.minutes, self.seconds, self.microseconds)

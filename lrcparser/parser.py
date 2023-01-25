@@ -1,3 +1,4 @@
+from copy import deepcopy
 from .constants import (
     LRC_LINE,
     LRC_WORD,
@@ -221,10 +222,17 @@ class LrcParser:
         combined_lrcs = []
         for duplicate in duplicates:
             main_lrc_line = duplicate[0]
+
+            if main_lrc_line.translations:
+                translations = deepcopy(main_lrc_line.translations)
+                translations.extend([lrc_line.text for lrc_line in duplicate[1:]])
+            else:
+                translations = [lrc_line.text for lrc_line in duplicate[1:]]
+
             lrc_line = LrcLine(
                 start_time=main_lrc_line.start_time,
                 text=main_lrc_line.text,
-                translations=[lrc_line.text for lrc_line in duplicate[1:]],
+                translations=translations,
             )
             combined_lrcs.append(lrc_line)
 
