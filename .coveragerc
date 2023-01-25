@@ -1,0 +1,10 @@
+[run]
+omit =
+    tests/*
+    lrcparser/__init__.py
+    lrcparser/types.py
+    lrcparser/utils.py
+source = lrcparser
+
+[paths]
+source = lrcparser

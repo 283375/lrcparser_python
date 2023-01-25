@@ -2,7 +2,7 @@ from datetime import timedelta
 from .constants import MS_DIGITS, LRC_TIMESTAMP
 from .types import MsDigitsRange
 
-from typing import NamedTuple
+from typing import Tuple, Union, NamedTuple
 
 
 class LrcTimeTuple(NamedTuple):
@@ -41,7 +41,9 @@ class LrcTime:
 
             if seconds >= 60 or microseconds > 999999:
                 # TODO: use log warning here
-                print(f"Got invalid timestamp {s}, converting to {str(cls(time_tuple))}")
+                print(
+                    f"Got invalid timestamp {s}, converting to {str(cls(time_tuple))}"
+                )
 
             return time_tuple
 
@@ -50,7 +52,7 @@ class LrcTime:
 
     def __init__(
         self,
-        arg: timedelta | tuple[int, int, int] | str | int,
+        arg: Union[timedelta, Tuple[int, int, int], str, int],
         *args: int,
         microsecond: bool = False,
     ):
@@ -123,7 +125,7 @@ class LrcTime:
             return f"{self.__class__.__name__}({self.minutes}, {self.seconds}, {self.microseconds // 1000})"
         return f"{self.__class__.__name__}({self.minutes}, {self.seconds}, {self.microseconds}, microsecond=True)"
 
-    def __tuple__(self) -> tuple[int, int, int]:
+    def __tuple__(self) -> Tuple[int, int, int]:
         return (self.minutes, self.seconds, self.microseconds)
 
     def __hash__(self) -> int:

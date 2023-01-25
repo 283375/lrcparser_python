@@ -9,14 +9,14 @@ from .line import LrcLine
 from .time import LrcTime
 from .text import LrcTextSegment, LrcText
 
-from typing import TypedDict
+from typing import List, Dict, TypedDict
 
 
 class LrcParser:
     class ParseResult(TypedDict):
         offset: int
-        lrc_lines: list[LrcLine]
-        attributes: dict[str, str]
+        lrc_lines: List[LrcLine]
+        attributes: Dict[str, str]
 
     @classmethod
     def parse(
@@ -71,7 +71,7 @@ class LrcParser:
 
         """
         lines = s.splitlines()
-        lrc_lines: list[LrcLine] = []
+        lrc_lines: List[LrcLine] = []
         attributes = {}
         offset = 0
 
@@ -143,7 +143,7 @@ class LrcParser:
         }
 
     @classmethod
-    def find_duplicate(cls, lrc_lines: list[LrcLine]) -> list[list[LrcLine]]:
+    def find_duplicate(cls, lrc_lines: List[LrcLine]) -> List[List[LrcLine]]:
         """
         find_duplicate finds duplicate lyrics.
 
@@ -175,7 +175,7 @@ class LrcParser:
 
         """
 
-        timedelta_dict: dict[LrcTime, list[LrcLine]] = {}
+        timedelta_dict: Dict[LrcTime, List[LrcLine]] = {}
 
         for lrc_line in lrc_lines:
             if timedelta_dict.get(lrc_line.start_time) is None:
@@ -187,7 +187,7 @@ class LrcParser:
         return list(dict(sorted(timedelta_dict.items(), key=lambda i: i[0])).values())
 
     @classmethod
-    def combine_translation(cls, lrc_lines: list[LrcLine]) -> list[LrcLine]:
+    def combine_translation(cls, lrc_lines: List[LrcLine]) -> List[LrcLine]:
         """
         combine_translation analyzes the translation of the lyric.
 

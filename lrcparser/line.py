@@ -4,13 +4,15 @@ from .text import LrcTextSegment, LrcText
 from .constants import TRANSLATION_DIVIDER, MS_DIGITS
 from .types import MsDigitsRange
 
+from typing import List, Union
+
 
 class LrcLine:
     def __init__(
         self,
-        start_time: LrcTime | timedelta | LrcTimeTuple | str,
-        text: LrcText | str,
-        translations: list[LrcText] | list[str] | None = None,
+        start_time: Union[LrcTime, timedelta, LrcTimeTuple, str],
+        text: Union[LrcText, str],
+        translations: Union[List[LrcText], List[str], None] = None,
     ):
         self.start_time = (
             start_time if isinstance(start_time, LrcTime) else LrcTime(start_time)
@@ -22,7 +24,7 @@ class LrcLine:
             else text
         )
 
-        self.translations: list[LrcText] | None = (
+        self.translations: Union[List[LrcText], None] = (
             [
                 LrcText(LrcTextSegment(self.start_time, item))
                 if isinstance(item, str)
@@ -35,7 +37,7 @@ class LrcLine:
 
     def to_str(
         self,
-        force_word_timestamp: bool | None = None,
+        force_word_timestamp: Union[bool, None] = None,
         ms_digits: MsDigitsRange = MS_DIGITS,
         translations: bool = False,
         translation_divider: str = TRANSLATION_DIVIDER,

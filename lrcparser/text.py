@@ -2,6 +2,8 @@ from .time import LrcTime
 from .constants import MS_DIGITS
 from .types import MsDigitsRange
 
+from typing import List, Dict, Union
+
 
 class LrcTextSegment:
     def __init__(self, time: LrcTime, text: str):
@@ -12,7 +14,7 @@ class LrcTextSegment:
         self,
         ms_digits: MsDigitsRange = MS_DIGITS,
         word_timestamp: bool = False,
-        time: LrcTime | None = None,
+        time: Union[LrcTime, None] = None,
     ) -> str:
         """
         Convert segment to string.
@@ -53,15 +55,15 @@ class LrcTextSegment:
         return self.time < other.time if isinstance(other, self.__class__) else False
 
 
-class LrcText(list[LrcTextSegment]):
+class LrcText(List[LrcTextSegment]):
     def __init__(self, *args: LrcTextSegment):
         super().__init__(args)
 
     def to_str(
-        self: list[LrcTextSegment],
+        self: List[LrcTextSegment],
         ms_digits: MsDigitsRange = MS_DIGITS,
-        force_word_timestamp: bool | None = None,
-        time: LrcTime | None = None,
+        force_word_timestamp: Union[bool, None] = None,
+        time: Union[LrcTime, None] = None,
     ):
         word_timestamp = False
 
@@ -74,7 +76,7 @@ class LrcText(list[LrcTextSegment]):
             [segment.to_str(ms_digits, word_timestamp, time) for segment in self]
         )
 
-    def combine_duplicates(self: list[LrcTextSegment]):
+    def combine_duplicates(self: List[LrcTextSegment]):
         """
         Combines duplicate segments in list.
 
@@ -87,7 +89,7 @@ class LrcText(list[LrcTextSegment]):
         >>> text[0] == LrcTextSegment(LrcTime(0, 3, 750), "Segment 1, Segment 2.")
         True
         """
-        dedup_dict: dict[LrcTime, str] = {}
+        dedup_dict: Dict[LrcTime, str] = {}
 
         for segment in self:
             if dedup_dict.get(segment.time) is not None:
