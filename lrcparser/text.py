@@ -2,7 +2,7 @@ from .time import LrcTime
 from .constants import MS_DIGITS
 from .types import MsDigitsRange
 
-from typing import List, Dict, Union
+from typing import List, Dict, Optional
 
 
 class LrcTextSegment:
@@ -14,7 +14,7 @@ class LrcTextSegment:
         self,
         ms_digits: MsDigitsRange = MS_DIGITS,
         word_timestamp: bool = False,
-        time: Union[LrcTime, None] = None,
+        time: Optional[LrcTime] = None,
     ) -> str:
         """
         Convert segment to string.
@@ -62,8 +62,8 @@ class LrcText(List[LrcTextSegment]):
     def to_str(
         self: List[LrcTextSegment],
         ms_digits: MsDigitsRange = MS_DIGITS,
-        force_word_timestamp: Union[bool, None] = None,
-        time: Union[LrcTime, None] = None,
+        force_word_timestamp: Optional[bool] = None,
+        time: Optional[LrcTime] = None,
     ):
         word_timestamp = False
 

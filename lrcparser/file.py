@@ -1,7 +1,7 @@
 from .constants import TRANSLATION_DIVIDER
 from .line import LrcLine
 
-from typing import List, Dict, Protocol, Literal, Any, Union
+from typing import List, Dict, Protocol, Literal, Any, Optional
 
 
 class SupportsWrite(Protocol):
@@ -13,8 +13,8 @@ class LrcFile:
     def __init__(
         self,
         lrc_lines: List[LrcLine],
-        attributes: Union[Dict[str, str], None] = None,
-        offset: Union[int, None] = None,
+        attributes: Optional[Dict[str, str]] = None,
+        offset: Optional[int] = None,
     ):
         if attributes is None:
             attributes = {}

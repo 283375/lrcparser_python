@@ -4,7 +4,7 @@ from .text import LrcTextSegment, LrcText
 from .constants import TRANSLATION_DIVIDER, MS_DIGITS
 from .types import MsDigitsRange
 
-from typing import List, Union
+from typing import List, Union, Optional
 
 
 class LrcLine:
@@ -12,7 +12,7 @@ class LrcLine:
         self,
         start_time: Union[LrcTime, timedelta, LrcTimeTuple, str],
         text: Union[LrcText, str],
-        translations: Union[List[LrcText], List[str], None] = None,
+        translations: Optional[Union[List[LrcText], List[str]]] = None,
     ):
         self.start_time = (
             start_time if isinstance(start_time, LrcTime) else LrcTime(start_time)
@@ -24,7 +24,7 @@ class LrcLine:
             else text
         )
 
-        self.translations: Union[List[LrcText], None] = (
+        self.translations: Optional[List[LrcText]] = (
             [
                 LrcText(LrcTextSegment(self.start_time, item))
                 if isinstance(item, str)
@@ -37,7 +37,7 @@ class LrcLine:
 
     def to_str(
         self,
-        force_word_timestamp: Union[bool, None] = None,
+        force_word_timestamp: Optional[bool] = None,
         ms_digits: MsDigitsRange = MS_DIGITS,
         translations: bool = False,
         translation_divider: str = TRANSLATION_DIVIDER,
