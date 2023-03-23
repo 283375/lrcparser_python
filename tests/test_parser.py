@@ -1,4 +1,4 @@
-from lrcparser import LrcLine, LrcParser, LrcTime, LrcText, LrcTextSegment
+from lrcparser import LrcLine, LrcParser, LrcText, LrcTextSegment, LrcTime
 
 with open("example.lrc", "r", encoding="utf-8") as lrc_file:
     example = lrc_file.read()

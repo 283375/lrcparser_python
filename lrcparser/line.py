@@ -1,10 +1,10 @@
 from datetime import timedelta
-from .time import LrcTime, LrcTimeTuple
-from .text import LrcTextSegment, LrcText
-from .constants import TRANSLATION_DIVIDER, MS_DIGITS
-from .types import MsDigitsRange
+from typing import List, Optional, Union
 
-from typing import List, Union, Optional
+from .constants import MS_DIGITS, TRANSLATION_DIVIDER
+from .text import LrcText, LrcTextSegment
+from .time import LrcTime, LrcTimeTuple
+from .types import MsDigitsRange
 
 
 class LrcLine:

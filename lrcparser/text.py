@@ -1,8 +1,8 @@
-from .time import LrcTime
-from .constants import MS_DIGITS
-from .types import MsDigitsRange
+from typing import Dict, List, Optional
 
-from typing import List, Dict, Optional
+from .constants import MS_DIGITS
+from .time import LrcTime
+from .types import MsDigitsRange
 
 
 class LrcTextSegment:

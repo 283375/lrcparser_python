@@ -1,5 +1,6 @@
-from lrcparser import LrcTime
 from datetime import timedelta
+
+from lrcparser import LrcTime
 
 
 class Test_LrcTime:

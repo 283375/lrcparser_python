@@ -1,17 +1,17 @@
 from .constants import (
-    LRC_TIMESTAMP,
     LRC_ATTRIBUTE,
     LRC_LINE,
+    LRC_TIMESTAMP,
     LRC_WORD,
     MS_DIGITS,
     TRANSLATION_DIVIDER,
 )
-from .utils import *
-from .line import LrcLine
-from .time import LrcTime
-from .text import LrcTextSegment, LrcText
-from .parser import LrcParser
 from .file import LrcFile
+from .line import LrcLine
+from .parser import LrcParser
+from .text import LrcText, LrcTextSegment
+from .time import LrcTime
+from .utils import *
 
 __all__ = [
     "LRC_TIMESTAMP",

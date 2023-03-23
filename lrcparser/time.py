@@ -1,8 +1,8 @@
 from datetime import timedelta
-from .constants import MS_DIGITS, LRC_TIMESTAMP
-from .types import MsDigitsRange
+from typing import NamedTuple, Tuple, Union
 
-from typing import Tuple, Union, NamedTuple
+from .constants import LRC_TIMESTAMP, MS_DIGITS
+from .types import MsDigitsRange
 
 
 class LrcTimeTuple(NamedTuple):

@@ -22,3 +22,6 @@ classifiers = [
 
 [tool.setuptools]
 package-dir = {"lrcparser" = "lrcparser"}
+
+[tool.isort]
+profile = "black"

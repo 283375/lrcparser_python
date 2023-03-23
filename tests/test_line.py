@@ -1,5 +1,6 @@
-from lrcparser import LrcLine, LrcTime, LrcText, LrcTextSegment, TRANSLATION_DIVIDER
 from datetime import timedelta
+
+from lrcparser import TRANSLATION_DIVIDER, LrcLine, LrcText, LrcTextSegment, LrcTime
 
 
 class Test_LrcLine_General:

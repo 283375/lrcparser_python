@@ -1,15 +1,10 @@
 from copy import deepcopy
-from .constants import (
-    LRC_LINE,
-    LRC_WORD,
-    LRC_ATTRIBUTE,
-    TRANSLATION_DIVIDER,
-)
-from .line import LrcLine
-from .time import LrcTime
-from .text import LrcTextSegment, LrcText
+from typing import Dict, List, TypedDict
 
-from typing import List, Dict, TypedDict
+from .constants import LRC_ATTRIBUTE, LRC_LINE, LRC_WORD, TRANSLATION_DIVIDER
+from .line import LrcLine
+from .text import LrcText, LrcTextSegment
+from .time import LrcTime
 
 
 class LrcParser:

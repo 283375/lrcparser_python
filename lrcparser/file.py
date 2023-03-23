@@ -1,7 +1,7 @@
+from typing import Any, Dict, List, Literal, Optional, Protocol
+
 from .constants import TRANSLATION_DIVIDER
 from .line import LrcLine
-
-from typing import List, Dict, Protocol, Literal, Any, Optional
 
 
 class SupportsWrite(Protocol):
