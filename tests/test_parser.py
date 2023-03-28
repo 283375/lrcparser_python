@@ -1,6 +1,6 @@
 from lrcparser import LrcLine, LrcParser, LrcText, LrcTextSegment, LrcTime
 
-with open("example.lrc", "r", encoding="utf-8") as lrc_file:
+with open("tests/files/example.lrc", "r", encoding="utf-8") as lrc_file:
     example = lrc_file.read()
 
 
@@ -79,7 +79,7 @@ class Test_LrcParser_General:
         ]
 
 
-with open("example_spec.lrc", "r", encoding="utf-8") as lrc_file:
+with open("tests/files/example_spec.lrc", "r", encoding="utf-8") as lrc_file:
     example_spec = lrc_file.read()
 
 
