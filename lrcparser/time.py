@@ -12,43 +12,36 @@ class LrcTimeTuple(NamedTuple):
 
 
 class LrcTime:
-    @classmethod
-    def get_time_from_timedelta(cls, timedelta: timedelta) -> LrcTimeTuple:
-        hours, mins_and_secs = divmod(timedelta.seconds, 3600)
-        hours += timedelta.days * 24
+    @staticmethod
+    def __get_time_from_timedelta(td: timedelta) -> LrcTimeTuple:
+        hours, mins_and_secs = divmod(td.seconds, 3600)
+        hours += td.days * 24
         mins, secs = divmod(mins_and_secs, 60)
         mins += hours * 60
 
-        return LrcTimeTuple(mins, secs, timedelta.microseconds)
+        return LrcTimeTuple(mins, secs, td.microseconds)
 
     @classmethod
-    def get_time_from_str(cls, s: str) -> LrcTimeTuple:
+    def __get_time(cls, minutes: int, seconds: int, microseconds: int):
+        # when user input seconds >= 60 or microseconds >= 999999,
+        # we should correct it. timedelta made this easy.
+        return cls.__get_time_from_timedelta(
+            timedelta(minutes=minutes, seconds=seconds, microseconds=microseconds)
+        )
+
+    @classmethod
+    def __get_time_from_str(cls, s: str) -> LrcTimeTuple:
         re_match = LRC_TIMESTAMP.search(s)
-        if re_match is None:
-            raise ValueError(f"Cannot find timestamp in '{s}'.")
+
         try:
+            assert re_match is not None
             minutes = int(re_match["min"])
             seconds = int(re_match["sec"])
             microseconds = int(re_match["ms"].ljust(6, "0"))
 
-            time_tuple = cls.get_time_from_timedelta(
-                timedelta(
-                    minutes=minutes,
-                    seconds=seconds,
-                    microseconds=microseconds,
-                )
-            )
-
-            if seconds >= 60 or microseconds > 999999:
-                # TODO: use log warning here
-                print(
-                    f"Got invalid timestamp {s}, converting to {str(cls(time_tuple))}"
-                )
-
-            return time_tuple
-
+            return cls.__get_time(minutes, seconds, microseconds)
         except IndexError as e:
-            raise ValueError(f"Cannot find timestamp in '{s}'.") from e
+            raise ValueError(f"Cannot find timestamp in {repr(s)}.") from e
 
     def __init__(
         self,
@@ -72,36 +65,45 @@ class LrcTime:
         375
         """
 
+        minutes = None
+        seconds = None
+        microseconds = None
+
         if isinstance(arg, timedelta):
             (
-                self.minutes,
-                self.seconds,
-                self.microseconds,
-            ) = self.get_time_from_timedelta(arg)
+                minutes,
+                seconds,
+                microseconds,
+            ) = self.__get_time_from_timedelta(arg)
         elif (
             isinstance(arg, tuple)
             and len(arg) == 3
             and all(isinstance(item, int) for item in arg)
         ):
-            self.minutes = arg[0]
-            self.seconds = arg[1]
-            self.microseconds = arg[2] if microsecond else arg[2] * 1000
+            minutes = arg[0]
+            seconds = arg[1]
+            microseconds = arg[2] if microsecond else arg[2] * 1000
         elif isinstance(arg, str):
             (
-                self.minutes,
-                self.seconds,
-                self.microseconds,
-            ) = self.get_time_from_str(arg)
+                minutes,
+                seconds,
+                microseconds,
+            ) = self.__get_time_from_str(arg)
         elif (
             isinstance(arg, int)
             and len(args) == 2
             and all(isinstance(item, int) for item in args)
         ):
-            self.minutes = arg
-            self.seconds = args[0]
-            self.microseconds = args[1] if microsecond else args[1] * 1000
+            minutes = arg
+            seconds = args[0]
+            microseconds = args[1] if microsecond else args[1] * 1000
         else:
             raise ValueError(f"Invalid argument(s): {repr(args)}.")
+
+        # call __get_time to make sure we're getting valid results
+        self.minutes, self.seconds, self.microseconds = self.__get_time(
+            minutes, seconds, microseconds
+        )
 
     def to_str(self, ms_digits: MsDigitsRange = MS_DIGITS):
         # sourcery skip: use-fstring-for-formatting
