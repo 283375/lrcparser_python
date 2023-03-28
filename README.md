@@ -1,6 +1,6 @@
 # [WIP]lrcparser
 
-A simple parser to parse lrc files.
+A simple lyric file parser.
 
 ## Why this parser?
 
