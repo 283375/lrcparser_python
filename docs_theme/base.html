@@ -20,16 +20,18 @@
   </head>
 
   <body>
-    <div style="display: flex">
+    <div id="container">
       {% if nav|length>1 %}
       <nav id="nav">
         {% for nav_item in nav %}
           <div class="nav-item {% if nav_item.active %}nav-active{% endif %}">
           {% if nav_item.children %}
-            <span class="nav-title">{{ nav_item.title }}</span>
+            <span
+              class="nav-title {% if nav_item.active %}nav-active{% endif %}"
+            >{{ nav_item.title }}</span>
             {% for nav_item_children in nav_item.children %}
               <a
-                class="nav-link {% if nav_item.active %}nav-active{% endif %}"
+                class="nav-link nav-link-children {% if nav_item_children.active %}nav-active{% endif %}"
                 href="{{ nav_item_children.url|url }}"
               >{{ nav_item_children.title }}</a>
             {% endfor %}
@@ -57,10 +59,8 @@
       </nav>
       {% endif %}
 
-      <div id="mask">
-        <div id="content">
-          {% block content %}{{ page.content }}{% endblock %}
-        </div>
+      <div id="content">
+        {% block content %}{{ page.content }}{% endblock %}
       </div>
     </div>
 

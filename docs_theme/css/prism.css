@@ -4,14 +4,12 @@ pre code {
 }
 
 pre[class*='language-'] {
-  width: calc(95% - 3.8em);
   border-radius: 10px;
-
   background-color: #01294d;
 }
 
 code {
-  font-family: Fira Code, Consolas, sans-serif;
+  font-family: "Fira Code", "FiraCode NF", "Hack", "Consolas", sans-serif;
   font-size: 0.85em;
   padding: 0.07em 0.15em;
   line-height: inherit;
