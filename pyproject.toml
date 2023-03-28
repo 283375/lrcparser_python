@@ -25,3 +25,37 @@ package-dir = {"lrcparser" = "lrcparser"}
 
 [tool.isort]
 profile = "black"
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules"
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+requires =
+    tox>=4
+env_list = 
+    format
+    py{38, 39, 310}
+
+[gh-actions]
+python = 
+    3.8: py38
+    3.9: py39
+    3.10: py310
+
+[testenv:format]
+description = format code
+deps = black==23.1.0
+skip_install = true
+commands = black .
+
+[testenv]
+description = run unit tests
+deps =
+    pytest>=7
+    pytest-sugar
+skip_install = true
+commands =
+    pytest . {posargs:tests}
+"""
