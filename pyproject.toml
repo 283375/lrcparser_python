@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lrcparser"
-version = "0.1.1"
+version = "0.1.2"
 authors = [{ name = "283375", email = "log_283375@163.com" }]
 description = "A simple lyric file parser"
 readme = "README.md"
