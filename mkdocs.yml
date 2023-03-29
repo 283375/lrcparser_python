@@ -7,12 +7,12 @@ nav:
 
 theme:
     name: null
-    custom_dir: 'docs_theme/'
+    custom_dir: 'docs/.theme/'
     static_templates:
         - 404.html
 
 watch:
-    - docs_theme
+    - docs/.theme/
 
 markdown_extensions:
     - admonition
