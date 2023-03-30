@@ -1,3 +1,8 @@
+pre,
+code {
+  font-family: 'Fira Code', 'FiraCode NF', 'Hack', 'Consolas', sans-serif !important;
+}
+
 pre code {
   border: none;
   border-radius: none;
@@ -9,7 +14,6 @@ pre[class*='language-'] {
 }
 
 code {
-  font-family: "Fira Code", "FiraCode NF", "Hack", "Consolas", sans-serif;
   font-size: 0.85em;
   padding: 0.07em 0.15em;
   line-height: inherit;
