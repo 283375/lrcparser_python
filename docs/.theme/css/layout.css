@@ -10,6 +10,7 @@
 
 #nav {
   width: 20%;
+  min-width: max-content;
 
   display: flex;
   flex-direction: column;
@@ -86,7 +87,21 @@
 }
 
 #content {
-  padding: 1rem 1rem 2rem 3rem;
+  position: relative;
+  padding: 0 1rem 0rem 3rem;
   flex: 1;
-  overflow-y: auto;
+}
+
+#toc {
+  position: sticky;
+  padding: 1rem 2rem;
+
+  width: 15%;
+  min-width: max-content;
+}
+
+.toc-link {
+  display: block;
+  margin: 0.3em 0;
+  text-decoration: none;
 }

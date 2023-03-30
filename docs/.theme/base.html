@@ -11,6 +11,7 @@
       href="https://unpkg.com/prismjs@1.29.0/themes/prism-tomorrow.min.css"
     />
     <link rel="stylesheet" href="/css/prism.css" />
+    <link rel="stylesheet" href="/css/scrollbar.css" />
     <link rel="stylesheet" href="/css/main.css" />
     <link rel="stylesheet" href="/css/layout.css" />
     <link rel="stylesheet" href="/css/markdown.css" />
@@ -21,7 +22,7 @@
 
   <body>
     <div id="container">
-      {% if nav|length>1 %}
+      {% if nav|length>0 %}
       <nav id="nav">
         {% for nav_item in nav %}
           <div class="nav-item {% if nav_item.active %}nav-active{% endif %}">
@@ -50,8 +51,12 @@
 
           {% if "i18n" in config.plugins %}
             <div class="nav-lang-switch">
-              {% for lang, display in config.plugins.i18n.config.languages.items() -%}
-                <a href="/{{ lang }}/">{{ display.name }}</a>
+              {% for lang, display in config.plugins.i18n.config.languages.items() %}
+                {% if lang == i18n_page_locale %}
+                  <span class="text-active">{{ display.name }}</span>
+                {% else %}
+                  <a href="/{{ lang }}/">{{ display.name }}</a>
+                {% endif %}
               {% endfor %}
             </div>
           {% endif %}
@@ -60,11 +65,48 @@
       {% endif %}
 
       <div id="content">
-        {% block content %}{{ page.content }}{% endblock %}
+        <div id="content-scrollbar-container" style="height: 100%">
+          {% block content %}{{ page.content }}{% endblock %}
+        </div>
       </div>
+
+    {% macro render_anchor_link(anchor_link, depth=0) %}
+      <a
+        class="toc-link"
+        style="padding-left: {{ depth }}em"
+        href="#{{ anchor_link.id }}"
+      >{{ anchor_link.title }}</a>
+      {% if anchor_link.children|length>0 %}
+        {% for anchor_link_children in anchor_link.children %}
+          {{ render_anchor_link(anchor_link_children, depth + 1) }}
+        {% endfor %}
+      {% endif %}
+    {% endmacro %}
+
+    {% if page.toc %}
+      <div id="toc">
+        <div id="toc-scrollbar-container" style="height: 100%">
+          {% for toc_item in page.toc %}
+            {{ render_anchor_link(toc_item) }}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    
     </div>
 
     <script src="https://unpkg.com/prismjs@1.29.0/components/prism-core.min.js"></script>
     <script src="https://unpkg.com/prismjs@1.29.0/components/prism-python.min.js"></script>
+    <script src="/js/scrollbar.js"></script>
+    <script src="/js/navScrollspy.js"></script>
+    <script>
+      window.addEventListener('load', () => {
+        createScrollbar(document.querySelector('div#content-scrollbar-container'))
+        createScrollbar(document.querySelector('div#toc-scrollbar-container'))
+
+        startScrollspy()
+      })
+    </script>
   </body>
 </html>

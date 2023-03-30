@@ -13,6 +13,10 @@
   --primary-color-darken-4: #01294d;
 }
 
+* {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -27,4 +31,8 @@ body {
 
 a {
   color: var(--primary-color-lighten-1);
+}
+
+.text-active {
+  color: var(--primary-color-lighten-5)
 }
