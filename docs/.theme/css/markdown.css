@@ -10,6 +10,20 @@ blockquote {
   border-left: 5px solid var(--primary-color-lighten-3);
 }
 
+table,
+th,
+td {
+  border: 1px solid var(--primary-color-lighten-3);
+  border-collapse: collapse;
+}
+th,
+td {
+  padding: 0.5em;
+}
+th {
+  background: rgba(166, 234, 255, 0.2);
+}
+
 .admonition {
   padding: 0.3rem 1rem;
   width: 90%;
