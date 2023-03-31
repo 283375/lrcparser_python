@@ -3,7 +3,10 @@ repo_url: https://github.com/283375/lrcparser_python
 
 nav:
     - lrcparser: index.md
-    - Concepts: concepts.md
+    - Usage: usage.md
+    - API:
+        - LrcTime: api/time.md
+        - LrcParser: api/parser.md
 
 theme:
     name: null
@@ -16,6 +19,8 @@ watch:
 
 markdown_extensions:
     - admonition
+    - toc:
+        baselevel: 1
 
 plugins:
     - i18n:
@@ -32,4 +37,4 @@ plugins:
                 build: true
         nav_translations:
             zh_CN:
-                Concepts: 概念
+                Usage: 使用

@@ -1,3 +1,3 @@
 # lrcparser
 
-A simple parser for parsing lyrics.
+A simple lyric file parser.
