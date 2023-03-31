@@ -10,7 +10,7 @@
 
 #nav {
   width: 20%;
-  min-width: max-content;
+  max-width: 20%;
 
   display: flex;
   flex-direction: column;
@@ -90,6 +90,7 @@
   position: relative;
   padding: 0 1rem 0rem 3rem;
   flex: 1;
+  max-width: 65%;
 }
 
 #toc {
@@ -97,7 +98,7 @@
   padding: 1rem 2rem;
 
   width: 15%;
-  min-width: max-content;
+  max-width: 15%;
 }
 
 .toc-link {

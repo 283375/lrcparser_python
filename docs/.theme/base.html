@@ -64,48 +64,55 @@
       </nav>
       {% endif %}
 
-      <div id="content">
-        <div id="content-scrollbar-container" style="height: 100%">
-          {% block content %}{{ page.content }}{% endblock %}
-        </div>
+      <div id="content" style="position: relative">
+        {% block content %}{{ page.content }}{% endblock %}
       </div>
 
-    {% macro render_anchor_link(anchor_link, depth=0) %}
-      <a
-        class="toc-link"
-        style="padding-left: {{ depth }}em"
-        href="#{{ anchor_link.id }}"
-      >{{ anchor_link.title }}</a>
-      {% if anchor_link.children|length>0 %}
-        {% for anchor_link_children in anchor_link.children %}
-          {{ render_anchor_link(anchor_link_children, depth + 1) }}
-        {% endfor %}
-      {% endif %}
-    {% endmacro %}
+      {% macro render_anchor_link(anchor_link, depth=0) %}
+        <a
+          class="toc-link"
+          style="padding-left: {{ depth }}em"
+          href="#{{ anchor_link.id }}"
+        >{{ anchor_link.title }}</a>
+        {% if anchor_link.children|length>0 %}
+          {% for anchor_link_children in anchor_link.children %}
+            {{ render_anchor_link(anchor_link_children, depth + 1) }}
+          {% endfor %}
+        {% endif %}
+      {% endmacro %}
 
-    {% if page.toc %}
-      <div id="toc">
-        <div id="toc-scrollbar-container" style="height: 100%">
+      {% if page.toc %}
+        <div id="toc" style="position: relative">
           {% for toc_item in page.toc %}
             {{ render_anchor_link(toc_item) }}
           {% endfor %}
         </div>
-      </div>
-    {% endif %}
-
-    
+      {% endif %}
     </div>
 
+    <script>
+      document.querySelectorAll('.toc-link').forEach((el) => {
+        el.addEventListener('click', (e) => {
+          e.preventDefault()
+          
+          const targetContentEl = document.querySelector(
+            new URL(e.target.href).hash
+          )
+
+          targetContentEl.scrollIntoView({ behavior: 'smooth' })
+        })
+      })
+    </script>
     <script src="https://unpkg.com/prismjs@1.29.0/components/prism-core.min.js"></script>
     <script src="https://unpkg.com/prismjs@1.29.0/components/prism-python.min.js"></script>
     <script src="/js/scrollbar.js"></script>
     <script src="/js/navScrollspy.js"></script>
     <script>
       window.addEventListener('load', () => {
-        createScrollbar(document.querySelector('div#content-scrollbar-container'))
-        createScrollbar(document.querySelector('div#toc-scrollbar-container'))
+        new CustomScrollbarWrap(document.querySelector('div#content'))
+        new CustomScrollbarWrap(document.querySelector('div#toc'))
 
-        startScrollspy()
+        // startScrollspy()
       })
     </script>
   </body>

@@ -13,10 +13,6 @@
   --primary-color-darken-4: #01294d;
 }
 
-* {
-  scroll-behavior: smooth;
-}
-
 body {
   margin: 0;
   padding: 0;
