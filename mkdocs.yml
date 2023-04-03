@@ -21,6 +21,8 @@ markdown_extensions:
     - admonition
     - toc:
         baselevel: 1
+        permalink: '#'
+        slugify: !!python/name:markdown.extensions.toc.slugify_unicode
 
 plugins:
     - i18n:

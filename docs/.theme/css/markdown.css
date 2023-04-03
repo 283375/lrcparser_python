@@ -1,8 +1,26 @@
+a.headerlink {
+  text-decoration: none;
+  -webkit-margin-start: 0.2em;
+          margin-inline-start: 0.2em;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+h1:hover > a.headerlink,
+h2:hover > a.headerlink,
+h3:hover > a.headerlink,
+h4:hover > a.headerlink,
+h5:hover > a.headerlink,
+h6:hover > a.headerlink {
+  visibility: visible;
+  opacity: 1;
+}
+
 blockquote {
   display: block;
   margin-block: 0;
   margin-inline: 0;
-
   margin: 1.5rem 0;
   padding: 0.5rem;
   padding-left: 1rem;
@@ -16,10 +34,12 @@ td {
   border: 1px solid var(--primary-color-lighten-3);
   border-collapse: collapse;
 }
+
 th,
 td {
   padding: 0.5em;
 }
+
 th {
   background: rgba(166, 234, 255, 0.2);
 }
@@ -27,14 +47,13 @@ th {
 .admonition {
   padding: 0.3rem 1rem;
   width: 90%;
-
   border-width: 1px;
   border-style: solid;
   border-radius: 10px;
 }
-
-.admonition > .admonition-title {
+.admonition-title {
   position: relative;
+  width: -moz-max-content;
   width: max-content;
   font-weight: bold;
   margin-block: 0;
@@ -43,14 +62,12 @@ th {
   border-bottom-width: 1px;
   border-bottom-style: solid;
 }
-
-.admonition.info {
+.admonition .info {
   background-color: rgba(0, 128, 153, 0.28);
   border-color: #00d5ff;
   color: #00d5ff;
 }
-
-.admonition.warning {
+.admonition .warning {
   background: rgba(153, 89, 0, 0.28);
   border-color: #ffbf66;
   color: #ffbf66;
