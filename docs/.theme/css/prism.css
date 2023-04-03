@@ -9,6 +9,7 @@ pre code {
 }
 
 pre[class*='language-'] {
+  font-size: 0.9em;
   border-radius: 10px;
   background-color: #01294d;
 }

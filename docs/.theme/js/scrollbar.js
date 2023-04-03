@@ -191,12 +191,22 @@ var CustomScrollbarHorizontal = /** @class */ (function (_super) {
     return CustomScrollbarHorizontal;
 }(CustomScrollbarVertical));
 var CustomScrollbarWrap = /** @class */ (function () {
-    function CustomScrollbarWrap(contentEl) {
-        var scrollbarWrapView = document.createElement('div');
+    function CustomScrollbarWrap(contentEl, options) {
+        if (options === void 0) { options = {
+            wrapContent: true,
+            wrapEl: 'div',
+        }; }
+        var scrollbarWrapView;
+        if (options.wrapContent) {
+            scrollbarWrapView = document.createElement(options.wrapEl);
+            Array.from(contentEl.children).forEach(function (child) {
+                return scrollbarWrapView.appendChild(child);
+            });
+        }
+        else {
+            scrollbarWrapView = contentEl;
+        }
         scrollbarWrapView.classList.add('scrollbar-wrap');
-        Array.from(contentEl.children).forEach(function (child) {
-            return scrollbarWrapView.appendChild(child);
-        });
         var vScrollbarContainer = document.createElement('div');
         vScrollbarContainer.classList.add('scrollbar-container', 'scrollbar-vertical-container');
         var hScrollbarContainer = document.createElement('div');

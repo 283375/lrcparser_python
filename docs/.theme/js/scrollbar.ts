@@ -242,17 +242,33 @@ class CustomScrollbarHorizontal extends CustomScrollbarVertical {
   }
 }
 
+interface CustomScrollbarWrapOptions {
+  wrapContent: boolean
+  wrapEl: 'div'
+}
+
 class CustomScrollbarWrap {
   vScrollbar: CustomScrollbarVertical
   hScrollbar: CustomScrollbarHorizontal
 
-  constructor(contentEl: HTMLElement) {
-    const scrollbarWrapView = document.createElement('div')
-    scrollbarWrapView.classList.add('scrollbar-wrap')
+  constructor(
+    contentEl: HTMLElement,
+    options: Partial<CustomScrollbarWrapOptions> = {
+      wrapContent: true,
+      wrapEl: 'div',
+    }
+  ) {
+    let scrollbarWrapView
+    if (options.wrapContent) {
+      scrollbarWrapView = document.createElement(options.wrapEl)
 
-    Array.from(contentEl.children).forEach((child) =>
-      scrollbarWrapView.appendChild(child)
-    )
+      Array.from(contentEl.children).forEach((child) =>
+        scrollbarWrapView.appendChild(child)
+      )
+    } else {
+      scrollbarWrapView = contentEl
+    }
+    scrollbarWrapView.classList.add('scrollbar-wrap')
 
     const vScrollbarContainer = document.createElement('div')
     vScrollbarContainer.classList.add(

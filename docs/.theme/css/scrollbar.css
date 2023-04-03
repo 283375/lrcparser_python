@@ -1,48 +1,38 @@
-.scrollbar-container {
-  position: absolute;
-  border-radius: 6px;
-
-  background: var(--primary-color-darken-3);
-  overflow: hidden;
-}
-
-.scrollbar-container.scrollbar-vertical-container {
-  top: 0;
-  right: 2px;
-  width: 6px;
-  height: 100%;
-}
-
-.scrollbar-container.scrollbar-horizontal-container {
-  left: 0;
-  bottom: 2px;
-  height: 6px;
-  width: 100%;
-}
-
 .scrollbar {
   border-radius: 6px;
   background: var(--primary-color-lighten-1);
   transition: margin 0.2s ease, width 0.2s ease, background 0.2s ease-in;
 }
-
-.scrollbar.scrollbar-vertical {
-  width: 6px;
-}
-
-.scrollbar.scrollbar-horizontal {
-  height: 6px;
-}
-
-.scrollbar.scrollbar-active,
-.scrollbar:hover {
+.scrollbar:hover, .scrollbar-active {
   background: var(--primary-color-lighten-3);
 }
-
+.scrollbar-container {
+  position: absolute;
+  border-radius: 6px;
+  background: var(--primary-color-darken-3);
+  overflow: hidden;
+}
+.scrollbar-vertical {
+  width: 6px;
+}
+.scrollbar-vertical-container {
+  top: 0;
+  right: 2px;
+  width: 6px;
+  height: 100%;
+}
+.scrollbar-horizontal {
+  height: 6px;
+}
+.scrollbar-horizontal-container {
+  left: 0;
+  bottom: 2px;
+  height: 6px;
+  width: 100%;
+}
 .scrollbar-wrap {
   position: relative;
   height: 100%;
-
   overflow: auto;
   scrollbar-width: none;
 }
