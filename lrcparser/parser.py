@@ -23,46 +23,47 @@ class LrcParser:
         """
         Parse lyrics from a string.
 
-        >>> s = '''[ti: TEST]
-        ... [ar: 283375]
-        ... [al: TEST ~AN EXAMPLE FOR YOU~]
-        ... [by: 283375]
-        ... [offset: 375]
-        ...
-        ... [00:05.26]Line 1 example
-        ... [00:07.36]Line 2 example | 翻译示例
-        ... [00:09.54]Line 3 divider example /// 分隔符示例'''
+        Examples:
+            >>> s = '''[ti: TEST]
+            ... [ar: 283375]
+            ... [al: TEST ~AN EXAMPLE FOR YOU~]
+            ... [by: 283375]
+            ... [offset: 375]
+            ...
+            ... [00:05.26]Line 1 example
+            ... [00:07.36]Line 2 example | 翻译示例
+            ... [00:09.54]Line 3 divider example /// 分隔符示例'''
 
-        >>> LrcParser.parse(s) == {
-        ...     'offset': 375,
-        ...     'lrc_lines': [
-        ...         LrcLine(text="Line 1 example", start_time=LrcTime(0, 5, 260)),
-        ...         LrcLine(text="Line 2 example | 翻译示例", start_time=LrcTime(0, 7, 360)),
-        ...         LrcLine(text="Line 3 divider example /// 分隔符示例", start_time=LrcTime(0, 9, 540))
-        ...     ],
-        ...     'attributes': {
-        ...         'ti': 'TEST',
-        ...         'ar': '283375',
-        ...         'al': 'TEST ~AN EXAMPLE FOR YOU~',
-        ...         'by': '283375',
-        ...         'offset': '375',
-        ...     }
-        ... }
-        True
+            >>> LrcParser.parse(s) == {
+            ...     'offset': 375,
+            ...     'lrc_lines': [
+            ...         LrcLine(text="Line 1 example", start_time=LrcTime(0, 5, 260)),
+            ...         LrcLine(text="Line 2 example | 翻译示例", start_time=LrcTime(0, 7, 360)),
+            ...         LrcLine(text="Line 3 divider example /// 分隔符示例", start_time=LrcTime(0, 9, 540))
+            ...     ],
+            ...     'attributes': {
+            ...         'ti': 'TEST',
+            ...         'ar': '283375',
+            ...         'al': 'TEST ~AN EXAMPLE FOR YOU~',
+            ...         'by': '283375',
+            ...         'offset': '375',
+            ...     }
+            ... }
+            True
 
-        >>> LrcParser.parse(s, parse_translations=True)['lrc_lines'] == [
-        ...     LrcLine(text="Line 1 example", start_time=LrcTime(0, 5, 260)),
-        ...     LrcLine(text="Line 2 example", translations=['翻译示例'], start_time=LrcTime(0, 7, 360)),
-        ...     LrcLine(text="Line 3 divider example /// 分隔符示例", start_time=LrcTime(0, 9, 540))
-        ... ]
-        True
+            >>> LrcParser.parse(s, parse_translations=True)['lrc_lines'] == [
+            ...     LrcLine(text="Line 1 example", start_time=LrcTime(0, 5, 260)),
+            ...     LrcLine(text="Line 2 example", translations=['翻译示例'], start_time=LrcTime(0, 7, 360)),
+            ...     LrcLine(text="Line 3 divider example /// 分隔符示例", start_time=LrcTime(0, 9, 540))
+            ... ]
+            True
 
-        >>> LrcParser.parse(s, parse_translations=True, translation_divider=' /// ')['lrc_lines'] == [
-        ...     LrcLine(text="Line 1 example", start_time=LrcTime(0, 5, 260)),
-        ...     LrcLine(text="Line 2 example | 翻译示例", start_time=LrcTime(0, 7, 360)),
-        ...     LrcLine(text="Line 3 divider example", translations=['分隔符示例'], start_time=LrcTime(0, 9, 540))
-        ... ]
-        True
+            >>> LrcParser.parse(s, parse_translations=True, translation_divider=' /// ')['lrc_lines'] == [
+            ...     LrcLine(text="Line 1 example", start_time=LrcTime(0, 5, 260)),
+            ...     LrcLine(text="Line 2 example | 翻译示例", start_time=LrcTime(0, 7, 360)),
+            ...     LrcLine(text="Line 3 divider example", translations=['分隔符示例'], start_time=LrcTime(0, 9, 540))
+            ... ]
+            True
 
         """
         lines = s.splitlines()
@@ -148,26 +149,27 @@ class LrcParser:
         Returns:
             A list of duplicate groups, see example for details.
 
-        >>> LrcParser.find_duplicate([
-        ...     LrcLine(start_time=LrcTime(0, 1, 589), text='Line 1'),
-        ...     LrcLine(start_time=LrcTime(0, 1, 589), text='Line 2'),
-        ...     LrcLine(start_time=LrcTime(0, 1, 589), text='Line 3'),
-        ...     LrcLine(start_time=LrcTime(0, 2, 589), text='Line 4'),
-        ...     LrcLine(start_time=LrcTime(0, 2, 589), text='Line 5'),
-        ...     LrcLine(start_time=LrcTime(0, 2, 589), text='Line 6'),
-        ... ]) == [
-        ...      [
-        ...          LrcLine(start_time=LrcTime(0, 1, 589), text='Line 1'),
-        ...          LrcLine(start_time=LrcTime(0, 1, 589), text='Line 2'),
-        ...          LrcLine(start_time=LrcTime(0, 1, 589), text='Line 3'),
-        ...      ],
-        ...      [
-        ...          LrcLine(start_time=LrcTime(0, 2, 589), text='Line 4'),
-        ...          LrcLine(start_time=LrcTime(0, 2, 589), text='Line 5'),
-        ...          LrcLine(start_time=LrcTime(0, 2, 589), text='Line 6'),
-        ...      ]
-        ...  ]
-        True
+        Examples:
+            >>> LrcParser.find_duplicate([
+            ...     LrcLine(start_time=LrcTime(0, 1, 589), text='Line 1'),
+            ...     LrcLine(start_time=LrcTime(0, 1, 589), text='Line 2'),
+            ...     LrcLine(start_time=LrcTime(0, 1, 589), text='Line 3'),
+            ...     LrcLine(start_time=LrcTime(0, 2, 589), text='Line 4'),
+            ...     LrcLine(start_time=LrcTime(0, 2, 589), text='Line 5'),
+            ...     LrcLine(start_time=LrcTime(0, 2, 589), text='Line 6'),
+            ... ]) == [
+            ...      [
+            ...          LrcLine(start_time=LrcTime(0, 1, 589), text='Line 1'),
+            ...          LrcLine(start_time=LrcTime(0, 1, 589), text='Line 2'),
+            ...          LrcLine(start_time=LrcTime(0, 1, 589), text='Line 3'),
+            ...      ],
+            ...      [
+            ...          LrcLine(start_time=LrcTime(0, 2, 589), text='Line 4'),
+            ...          LrcLine(start_time=LrcTime(0, 2, 589), text='Line 5'),
+            ...          LrcLine(start_time=LrcTime(0, 2, 589), text='Line 6'),
+            ...      ]
+            ...  ]
+            True
 
         """
 
@@ -193,23 +195,24 @@ class LrcParser:
         Returns:
             Processed list of LrcLine, see example for details.
 
-        >>> LrcParser.combine_translation([
-        ...     LrcLine(start_time=LrcTime(0, 1, 589), text='Line 1'),
-        ...     LrcLine(start_time=LrcTime(0, 1, 589), text='翻译 1'),
-        ...     LrcLine(start_time=LrcTime(0, 2, 589), text='Line 2'),
-        ...     LrcLine(start_time=LrcTime(0, 2, 589), text='翻译 2'),
-        ...     LrcLine(start_time=LrcTime(0, 2, 589), text='これは2行目です'),
-        ... ]) == [
-        ...     LrcLine(
-        ...         start_time=LrcTime(0, 1, 589),
-        ...         text='Line 1',
-        ...         translations=['翻译 1']),
-        ...     LrcLine(
-        ...         start_time=LrcTime(0, 2, 589),
-        ...         text='Line 2',
-        ...         translations=['翻译 2', 'これは2行目です'])
-        ... ]
-        True
+        Examples:
+            >>> LrcParser.combine_translation([
+            ...     LrcLine(start_time=LrcTime(0, 1, 589), text='Line 1'),
+            ...     LrcLine(start_time=LrcTime(0, 1, 589), text='翻译 1'),
+            ...     LrcLine(start_time=LrcTime(0, 2, 589), text='Line 2'),
+            ...     LrcLine(start_time=LrcTime(0, 2, 589), text='翻译 2'),
+            ...     LrcLine(start_time=LrcTime(0, 2, 589), text='これは2行目です'),
+            ... ]) == [
+            ...     LrcLine(
+            ...         start_time=LrcTime(0, 1, 589),
+            ...         text='Line 1',
+            ...         translations=['翻译 1']),
+            ...     LrcLine(
+            ...         start_time=LrcTime(0, 2, 589),
+            ...         text='Line 2',
+            ...         translations=['翻译 2', 'これは2行目です'])
+            ... ]
+            True
 
         """
         duplicates = cls.find_duplicate(lrc_lines)

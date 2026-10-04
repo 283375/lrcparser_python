@@ -45,19 +45,20 @@ class LrcLine:
         """
         to_str returns the string format of the lyric.
 
-        >>> line = LrcLine(
-        ...     start_time=LrcTime(0, 25, 478),
-        ...     text='Line 1',
-        ...     translations=['行 1']
-        ... )
-        >>> line.to_str()
-        '[00:25.47]Line 1'
-        >>> line.to_str(ms_digits=3, translations=True)
-        '[00:25.478]Line 1 | 行 1'
-        >>> line.to_str(ms_digits=3, translations=True, translation_divider='///')
-        '[00:25.478]Line 1///行 1'
-        >>> line.to_str(translations=True, translation_divider='\\n')
-        '[00:25.47]Line 1\\n[00:25.47]行 1'
+        Examples:
+            >>> line = LrcLine(
+            ...     start_time=LrcTime(0, 25, 478),
+            ...     text='Line 1',
+            ...     translations=['行 1']
+            ... )
+            >>> line.to_str()
+            '[00:25.47]Line 1'
+            >>> line.to_str(ms_digits=3, translations=True)
+            '[00:25.478]Line 1 | 行 1'
+            >>> line.to_str(ms_digits=3, translations=True, translation_divider='///')
+            '[00:25.478]Line 1///行 1'
+            >>> line.to_str(translations=True, translation_divider='\\n')
+            '[00:25.47]Line 1\\n[00:25.47]行 1'
 
         """
         time_str = f"[{self.start_time.to_str(ms_digits)}]"
@@ -82,9 +83,10 @@ class LrcLine:
         """
         __int__ returns the seconds of the lyric start time.
 
-        >>> line = LrcLine(start_time=LrcTime(0, 25, 485), text='')
-        >>> int(line)
-        25
+        Examples:
+            >>> line = LrcLine(start_time=LrcTime(0, 25, 485), text='')
+            >>> int(line)
+            25
 
         """
         return int(self.start_time)
@@ -93,9 +95,10 @@ class LrcLine:
         """
         __float__ returns the seconds (including microseconds, in decimal form) of the lyric start time.
 
-        >>> line = LrcLine(LrcTime(0, 25, 48525, microsecond=True), text='')
-        >>> float(line)
-        25.048525
+        Examples:
+            >>> line = LrcLine(LrcTime(0, 25, 48525, microsecond=True), text='')
+            >>> float(line)
+            25.048525
 
         """
         return float(self.start_time)

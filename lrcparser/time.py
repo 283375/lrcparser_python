@@ -57,12 +57,13 @@ class LrcTime:
 
         Please notice that `microsecond` does not affect `str` argument.
 
-        >>> time1 = LrcTime(0, 3, 375)  # equals to [00:03.375]
-        >>> time1.microseconds
-        375000
-        >>> time2 = LrcTime(0, 3, 375, microsecond=True)  # equals to [00:03.000375]
-        >>> time2.microseconds
-        375
+        Examples:
+            >>> time1 = LrcTime(0, 3, 375)  # equals to [00:03.375]
+            >>> time1.microseconds
+            375000
+            >>> time2 = LrcTime(0, 3, 375, microsecond=True)  # equals to [00:03.000375]
+            >>> time2.microseconds
+            375
         """
 
         minutes = None

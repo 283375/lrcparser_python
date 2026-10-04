@@ -21,15 +21,16 @@ class LrcTextSegment:
 
         `word_timestamp` and `time` is used to determine whether the "word" timestamp should be added.
 
-        >>> seg = LrcTextSegment(time=LrcTime(3, 7, 500), text='test')
-        >>> seg.to_str()
-        'test'
-        >>> seg.to_str(time=LrcTime(4, 7, 500))
-        '<03:07.50>test'
-        >>> seg.to_str(time=LrcTime(3, 7, 500))
-        'test'
-        >>> seg.to_str(word_timestamp=True, time=LrcTime(3, 7, 500))
-        '<03:07.50>test'
+        Examples:
+            >>> seg = LrcTextSegment(time=LrcTime(3, 7, 500), text='test')
+            >>> seg.to_str()
+            'test'
+            >>> seg.to_str(time=LrcTime(4, 7, 500))
+            '<03:07.50>test'
+            >>> seg.to_str(time=LrcTime(3, 7, 500))
+            'test'
+            >>> seg.to_str(word_timestamp=True, time=LrcTime(3, 7, 500))
+            '<03:07.50>test'
         """
 
         return (
@@ -80,14 +81,15 @@ class LrcText(List[LrcTextSegment]):
         """
         Combines duplicate segments in list.
 
-        >>> text = LrcText(
-        ...     LrcTextSegment(LrcTime(0, 3, 750), "Segment 1, "),
-        ...     LrcTextSegment(LrcTime(0, 3, 750), "Segment 2."),
-        ...     LrcTextSegment(LrcTime(0, 4, 750), "Segment 3"),
-        ... )
-        >>> text.combine_duplicates()
-        >>> text[0] == LrcTextSegment(LrcTime(0, 3, 750), "Segment 1, Segment 2.")
-        True
+        Examples:
+            >>> text = LrcText(
+            ...     LrcTextSegment(LrcTime(0, 3, 750), "Segment 1, "),
+            ...     LrcTextSegment(LrcTime(0, 3, 750), "Segment 2."),
+            ...     LrcTextSegment(LrcTime(0, 4, 750), "Segment 3"),
+            ... )
+            >>> text.combine_duplicates()
+            >>> text[0] == LrcTextSegment(LrcTime(0, 3, 750), "Segment 1, Segment 2.")
+            True
         """
         dedup_dict: Dict[LrcTime, str] = {}
 
