@@ -1,3 +1,0 @@
-build==0.10.0
-setuptools
-twine==4.0.2
