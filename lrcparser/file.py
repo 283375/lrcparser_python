@@ -5,8 +5,7 @@ from .line import LrcLine
 
 
 class SupportsWrite(Protocol):
-    def write(self, s: str) -> Any:
-        ...
+    def write(self, s: str) -> Any: ...
 
 
 class LrcFile:

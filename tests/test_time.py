@@ -3,7 +3,7 @@ from datetime import timedelta
 from lrcparser import LrcTime
 
 
-class Test_LrcTime:
+class TestLrcTime:
     time_tuple = LrcTime((0, 3, 750))
     time_int = LrcTime(0, 3, 750)
     time_int_microsecond = LrcTime(0, 3, 750000, microsecond=True)

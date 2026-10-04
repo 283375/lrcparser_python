@@ -1,10 +1,10 @@
 from lrcparser import LrcLine, LrcParser, LrcText, LrcTextSegment, LrcTime
 
-with open("tests/files/example.lrc", "r", encoding="utf-8") as lrc_file:
+with open("tests/files/example.lrc", encoding="utf-8") as lrc_file:
     example = lrc_file.read()
 
 
-class Test_LrcParser_General:
+class TestLrcParserGeneral:
     result = LrcParser.parse(example)
     result_translation = LrcParser.parse(example, parse_translations=True)
 
@@ -46,7 +46,9 @@ class Test_LrcParser_General:
         assert lrc_lines[3].translations == [
             LrcText(LrcTextSegment(self.timestamps[3], "一般大家都这么打翻译")),
             LrcText(LrcTextSegment(self.timestamps[3], "可惜我更喜欢换行")),
-            LrcText(LrcTextSegment(self.timestamps[3], "你说得对，但是《lrcparser》是由……")),
+            LrcText(
+                LrcTextSegment(self.timestamps[3], "你说得对，但是《lrcparser》是由……")
+            ),
         ]
 
     def test_find_duplicate(self):
@@ -79,11 +81,11 @@ class Test_LrcParser_General:
         ]
 
 
-with open("tests/files/example_spec.lrc", "r", encoding="utf-8") as lrc_file:
+with open("tests/files/example_spec.lrc", encoding="utf-8") as lrc_file:
     example_spec = lrc_file.read()
 
 
-class Test_LrcParser_Special:
+class TestLrcParserSpecial:
     result = LrcParser.parse(example_spec)
     result_translations = LrcParser.parse(example_spec, parse_translations=True)
 

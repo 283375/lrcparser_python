@@ -11,7 +11,6 @@ from .line import LrcLine
 from .parser import LrcParser
 from .text import LrcText, LrcTextSegment
 from .time import LrcTime
-from .utils import *
 
 __all__ = [
     "LRC_TIMESTAMP",

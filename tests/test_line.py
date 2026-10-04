@@ -1,9 +1,7 @@
-from datetime import timedelta
-
 from lrcparser import TRANSLATION_DIVIDER, LrcLine, LrcText, LrcTextSegment, LrcTime
 
 
-class Test_LrcLine_General:
+class TestLrcLineGeneral:
     line = LrcLine(
         start_time=LrcTime(0, 5, 593),
         text=LrcText(LrcTextSegment(LrcTime(0, 5, 593), "This is a test line.")),
@@ -33,7 +31,7 @@ class Test_LrcLine_General:
         assert float(self.line) == 5.593
 
 
-class Test_LrcLine_Word:
+class TestLrcLineWord:
     line = LrcLine(
         start_time=LrcTime(0, 5, 593),
         text=LrcText(
