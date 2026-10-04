@@ -2,41 +2,53 @@ site_name: lrcparser
 repo_url: https://github.com/283375/lrcparser_python
 
 nav:
-    - lrcparser: index.md
-    - Usage: usage.md
-    - API:
-        - LrcTime: api/time.md
-        - LrcParser: api/parser.md
+  - lrcparser: index.md
+  - Usage: usage.md
+  - API:
+    - LrcTime: api/time.md
+    - LrcParser: api/parser.md
 
 theme:
-    name: null
-    custom_dir: 'docs/.theme/'
-    static_templates:
-        - 404.html
-
-watch:
-    - docs/.theme/
+  name: material
+  language: zh
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: 切换至深色模式
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: 切换至浅色模式
+  features:
+    - content.code.copy
+    - navigation.top
 
 markdown_extensions:
-    - admonition
-    - toc:
-        baselevel: 1
-        permalink: '#'
-        slugify: !!python/name:markdown.extensions.toc.slugify_unicode
+  - admonition
+  - toc:
+      baselevel: 1
+      permalink: "#"
+      slugify: !!python/name:markdown.extensions.toc.slugify_unicode
 
 plugins:
-    - i18n:
-        default_language: zh_CN
-        # default_language_only: true
-        docs_structure: folder
-        material_alternate: false
-        languages:
-            en:
-                name: English
-                build: true
-            zh_CN:
-                name: 简体中文
-                build: true
-        nav_translations:
-            zh_CN:
-                Usage: 使用
+  - search
+  - i18n:
+      docs_structure: folder
+      fallback_to_default: true
+      languages:
+        - name: English
+          locale: en
+          build: true
+        - name: 简体中文
+          locale: zh
+          build: true
+          default: true
+          nav_translations:
+            Usage: 使用
+  - mkdocstrings:
+      locale: en
+      handlers:
+        python:
+          options:
+            docstring_style: google

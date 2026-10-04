@@ -142,10 +142,11 @@ class LrcParser:
         """
         find_duplicate finds duplicate lyrics.
 
-        :param lrc_lines: A list of LyricLine.
-        :type lrc_lines: list
-        :return: A list of duplicate groups, see example for details.
-        :rtype: list
+        Args:
+            lrc_lines: A list of LrcLine.
+
+        Returns:
+            A list of duplicate groups, see example for details.
 
         >>> LrcParser.find_duplicate([
         ...     LrcLine(start_time=LrcTime(0, 1, 589), text='Line 1'),
@@ -186,10 +187,11 @@ class LrcParser:
         """
         combine_translation analyzes the translation of the lyric.
 
-        :param lrc_lines: A list of LyricLine.
-        :type lrc_lines: list
-        :return: Processed list of LyricLine, see example for details.
-        :rtype: list
+        Args:
+            lrc_lines: A list of LrcLine.
+
+        Returns:
+            Processed list of LrcLine, see example for details.
 
         >>> LrcParser.combine_translation([
         ...     LrcLine(start_time=LrcTime(0, 1, 589), text='Line 1'),

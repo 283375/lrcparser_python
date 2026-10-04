@@ -27,4 +27,4 @@ with open("example.lrc") as lrc_rs:
     offset, lrc_lines, attributes = parse_result.values()
 ```
 
-> 有关 LrcParser.parse() 的详细使用说明，参见 API 文档：[LrcParser.parse](/api/parser)
+> 有关 LrcParser.parse() 的详细使用说明，参见 API 文档：[LrcParser.parse](../api/parser.md)
