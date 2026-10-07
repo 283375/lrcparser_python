@@ -1,0 +1,8 @@
+[ti:loose test]
+[ar: someone]
+[offset:100]
+
+[0:01.5]single digit minute, one decimal digit
+[00:12]no milliseconds
+[1:2]minimal
+[75:33.75]minutes overflow

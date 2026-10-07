@@ -1,7 +1,8 @@
 from datetime import timedelta
 from typing import NamedTuple, Tuple, Union
 
-from .constants import LRC_TIMESTAMP, MS_DIGITS
+from .constants import MS_DIGITS
+from .scanner import find_timestamp
 from .types import MsDigitsRange
 
 
@@ -31,17 +32,13 @@ class LrcTime:
 
     @classmethod
     def __get_time_from_str(cls, s: str) -> LrcTimeTuple:
-        re_match = LRC_TIMESTAMP.search(s)
+        timestamp = find_timestamp(s)
 
-        try:
-            assert re_match is not None
-            minutes = int(re_match["min"])
-            seconds = int(re_match["sec"])
-            microseconds = int(re_match["ms"].ljust(6, "0"))
+        if timestamp is None:
+            raise ValueError(f"Cannot find timestamp in {repr(s)}.")
 
-            return cls.__get_time(minutes, seconds, microseconds)
-        except IndexError as e:
-            raise ValueError(f"Cannot find timestamp in {repr(s)}.") from e
+        minutes, seconds, microseconds = timestamp
+        return cls.__get_time(minutes, seconds, microseconds)
 
     def __init__(
         self,
@@ -107,11 +104,10 @@ class LrcTime:
         )
 
     def to_str(self, ms_digits: MsDigitsRange = MS_DIGITS):
-        # sourcery skip: use-fstring-for-formatting
         return "{}:{}.{}".format(
             str(self.minutes).rjust(2, "0"),
             str(self.seconds).rjust(2, "0"),
-            str(self.microseconds)[:ms_digits],
+            str(self.microseconds).rjust(6, "0")[:ms_digits],
         )
 
     def __int__(self) -> int:

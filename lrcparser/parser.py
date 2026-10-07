@@ -1,8 +1,9 @@
 from copy import deepcopy
 from typing import Dict, List, TypedDict
 
-from .constants import LRC_ATTRIBUTE, LRC_LINE, LRC_WORD, TRANSLATION_DIVIDER
+from .constants import TRANSLATION_DIVIDER
 from .line import LrcLine
+from .scanner import scan_line, scan_word_segments
 from .text import LrcText, LrcTextSegment
 from .time import LrcTime
 
@@ -73,56 +74,57 @@ class LrcParser:
 
         def __get_lrc_text_from_content(content: str, time: LrcTime):
             text = LrcText()
-            if word_match := LRC_WORD.findall(content):
-                for _time, _text in word_match:
-                    text.append(LrcTextSegment(LrcTime(_time), _text))
+            segments = scan_word_segments(content)
+            if any(timestamp is not None for timestamp, _ in segments):
+                for timestamp, segment_text in segments:
+                    segment_time = (
+                        LrcTime(timestamp, microsecond=True)
+                        if timestamp is not None
+                        else time
+                    )
+                    text.append(LrcTextSegment(segment_time, segment_text))
             else:
                 text.append(LrcTextSegment(time, content))
             return text
 
         for line in lines:
-            if attribute_match := LRC_ATTRIBUTE.match(line):
-                attr_name = attribute_match["name"].lower()
-                attr_value = attribute_match["value"]
+            scanned = scan_line(line)
 
+            for name, value in scanned.attributes:
+                attr_name = name.lower()
                 if attr_name == "offset":
-                    offset = int(attr_value)
+                    offset = int(value)
+                attributes[attr_name] = value
 
-                attributes[attr_name] = attr_value
+            if not scanned.timestamps:
+                continue
+            content = scanned.content
 
-            if lrc_line_match := LRC_LINE.match(line):
-                start_time = [LrcTime(lrc_line_match["time"])]
-                content = lrc_line_match["content"]
+            for timestamp in scanned.timestamps:
+                time = LrcTime(timestamp, microsecond=True)
+                text = LrcText()
+                translations = []
 
-                # for lyrics like `[01:02.03][02:03.04][03:07.75]Same lyrics`
-                while extra_match := LRC_LINE.match(content):
-                    start_time.append(LrcTime(extra_match["time"]))
-                    content = extra_match["content"]
+                if parse_translations:
+                    splited_content = content.split(translation_divider)
 
-                for time in start_time:
-                    text = LrcText()
-                    translations = []
+                    for i, content in enumerate(splited_content):
+                        _list = __get_lrc_text_from_content(content, time)
+                        if i == 0:
+                            text = _list
+                        else:
+                            translations.append(_list)
 
-                    if parse_translations:
-                        splited_content = content.split(translation_divider)
+                else:
+                    text = __get_lrc_text_from_content(content, time)
 
-                        for i, content in enumerate(splited_content):
-                            _list = __get_lrc_text_from_content(content, time)
-                            if i == 0:
-                                text = _list
-                            else:
-                                translations.append(_list)
-
-                    else:
-                        text = __get_lrc_text_from_content(content, time)
-
-                    lrc_lines.append(
-                        LrcLine(
-                            start_time=time,
-                            text=text,
-                            translations=translations or None,
-                        )
+                lrc_lines.append(
+                    LrcLine(
+                        start_time=time,
+                        text=text,
+                        translations=translations or None,
                     )
+                )
 
         if parse_translations:
             duplicate_lines = cls.find_duplicate(lrc_lines)

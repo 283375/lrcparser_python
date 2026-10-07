@@ -156,3 +156,29 @@ class TestLrcParserSpecial:
                 LrcTextSegment(LrcTime(3, 25, 575), "？"),
             ),
         ]
+
+
+class TestLrcParserLoose:
+    def test_loose_timestamps(self):
+        with open("tests/files/example_loose.lrc", encoding="utf-8") as lrc_file:
+            loose = lrc_file.read()
+
+        result = LrcParser.parse(loose)
+        assert result["offset"] == 100
+        assert result["attributes"] == {
+            "ti": "loose test",
+            "ar": "someone",
+            "offset": "100",
+        }
+        assert [str(line.start_time) for line in result["lrc_lines"]] == [
+            "00:01.50",
+            "00:12.00",
+            "01:02.00",
+            "75:33.75",
+        ]
+        assert [str(line.text) for line in result["lrc_lines"]] == [
+            "single digit minute, one decimal digit",
+            "no milliseconds",
+            "minimal",
+            "minutes overflow",
+        ]
