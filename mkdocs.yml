@@ -40,6 +40,16 @@ plugins:
         - name: English
           locale: en
           build: true
+          theme:
+            palette:
+              - scheme: default
+                toggle:
+                  icon: material/brightness-7
+                  name: Switch to dark mode
+              - scheme: slate
+                toggle:
+                  icon: material/brightness-4
+                  name: Switch to light mode
         - name: 简体中文
           locale: zh
           build: true
