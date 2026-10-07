@@ -70,19 +70,3 @@ class TestLrcLineWord:
             "[00:05.59]<00:05.59>这<00:05.69>是<00:05.79>个<00:05.89>测<00:06.69>试\n"
             "[00:05.59]<00:05.79>これテストです"
         )
-
-
-# class Test_LrcLine_Shorthand:
-#     line = LrcLine(
-#         start_timedelta=timedelta(seconds=5, milliseconds=593),
-#         text=[(timedelta(seconds=5, milliseconds=593), "This is a test line.")],
-#         translations=[[(timedelta(seconds=5, milliseconds=593), "这是测试。")]],
-#     )
-#     line_short = LrcLine(
-#         start_timedelta=timedelta(seconds=5, milliseconds=593),
-#         text="This is a test line.",
-#         translations=["这是测试。"],
-#     )
-
-#     def test_shorthand(self):
-#         assert self.line == self.line_short

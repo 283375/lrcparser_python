@@ -38,3 +38,9 @@ class TestLrcTime:
         assert (
             repr(self.time_repr_microsecond) == "LrcTime(0, 3, 750, microsecond=True)"
         )
+
+    def test_to_str(self):
+        assert self.time_int.to_str(3) == "00:03.750"
+        assert LrcTime(0, 3, 375, microsecond=True).to_str(6) == "00:03.000375"
+        # microseconds below 100000 need left zero padding before the ms_digits slice
+        assert LrcTime(0, 25, 48525, microsecond=True).to_str(3) == "00:25.048"

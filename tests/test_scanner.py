@@ -129,7 +129,12 @@ class TestScanWordSegments:
 
 
 class OldRegexBaseline:
-    """旧正则扫描的参考实现，作为差分安全网；确认稳定后可删。"""
+    """Reference implementation of the old regex-based scanner, kept as a
+    differential safety net.
+
+    TODO: remove OldRegexBaseline once differential testing stays
+    failure-free across releases.
+    """
 
     LRC_LINE = re.compile(r"(?P<time>\[\d{2}:\d{2}\.\d{2,6}\])(?P<content>.*)")
     LRC_WORD = re.compile(

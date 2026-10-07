@@ -1,9 +1,7 @@
 """Character-level scanner for LRC lines.
 
-An explicit state machine (TEXT -> BRACKET / ANGLE) replacing the previous
-regex-based scanning, so that loose real-world formats ([1:02], [00:12]
-without milliseconds, single-digit fields) and malformed input
-(unterminated brackets) all have well-defined behavior.
+An explicit state machine (TEXT -> BRACKET / ANGLE), so that loose
+real-world formats and malformed input all have well-defined behavior.
 
 Timestamps are returned as ``(minutes, seconds, microseconds)`` tuples with
 raw, non-normalized values (e.g. seconds > 59); :class:`lrcparser.LrcTime`
@@ -109,29 +107,29 @@ def find_timestamp(text: str) -> tuple[int, int, int] | None:
 def scan_line(line: str) -> LrcLineScan:
     """Scan one LRC line into leading timestamps, attributes and content."""
     if "[" not in line:
-        # 快速通道：绝大多数行到这里就结束了
+        # Fast path: no brackets means no tags
         return LrcLineScan((), (), line.lstrip("\ufeff"))
     line = line.lstrip("\ufeff")
     timestamps: list[tuple[int, int, int]] = []
     attributes: list[tuple[str, str]] = []
     i, length = 0, len(line)
-    # 状态 BRACKET：吃掉行首连续的 [...] tag
+    # State BRACKET: consume leading [...] tags
     while i < length and line[i] == "[":
         end = line.find("]", i + 1)
         if end == -1:
-            # 未闭合的 [：整体按字面内容处理
+            # Unterminated "[": treat the rest as literal content
             break
         tag = line[i + 1 : end]
         timestamp = parse_timestamp(tag)
         if timestamp is not None:
             timestamps.append(timestamp)
         else:
-            # 属性 tag：name: value；空值视为畸形，忽略
+            # Attribute tag "name: value"; an empty value is malformed, skip it
             name, sep, value = tag.partition(":")
             if sep and value.strip():
                 attributes.append((name.strip(), value.strip()))
         i = end + 1
-    # 状态 TEXT：剩下的部分是歌词内容
+    # State TEXT: the rest is lyric content
     return LrcLineScan(tuple(timestamps), tuple(attributes), line[i:])
 
 
@@ -150,12 +148,12 @@ def scan_word_segments(content: str) -> list[tuple[tuple[int, int, int] | None, 
     """
     segments: list[tuple[tuple[int, int, int] | None, str]] = []
     if "<" not in content:
-        # 快速通道：没有逐字时间戳的行占大多数
+        # Fast path: no "<" means no word timestamps
         return [(None, content)] if content else []
     buffer: list[str] = []
     i, length = 0, len(content)
     while i < length:
-        # 状态 ANGLE：遇 < 尝试读一个 word 时间戳 tag
+        # State ANGLE: on "<", try to read a word timestamp tag
         if content[i] == "<":
             end = content.find(">", i + 1)
             if (
