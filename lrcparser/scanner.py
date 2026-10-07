@@ -10,6 +10,8 @@ raw, non-normalized values (e.g. seconds > 59); :class:`lrcparser.LrcTime`
 is responsible for normalization.
 """
 
+from __future__ import annotations
+
 from typing import NamedTuple
 
 MAX_MS_DIGITS = 6
@@ -28,12 +30,12 @@ def _is_digit(ch: str) -> bool:
 
 
 def _is_digits(text: str, min_len: int, max_len: int) -> bool:
-    return (
-        min_len <= len(text) <= max_len and text.isascii() and text.isdigit()
-    )
+    return min_len <= len(text) <= max_len and text.isascii() and text.isdigit()
 
 
-def _parse_timestamp_at(text: str, start: int) -> tuple[tuple[int, int, int], int] | None:
+def _parse_timestamp_at(
+    text: str, start: int
+) -> tuple[tuple[int, int, int], int] | None:
     """Try to parse ``mm:ss(.ms)`` from ``start``; return it with the end index."""
     i = start
     while i < len(text) and _is_digit(text[i]):
@@ -156,7 +158,10 @@ def scan_word_segments(content: str) -> list[tuple[tuple[int, int, int] | None, 
         # 状态 ANGLE：遇 < 尝试读一个 word 时间戳 tag
         if content[i] == "<":
             end = content.find(">", i + 1)
-            if end != -1 and (timestamp := parse_timestamp(content[i + 1 : end])) is not None:
+            if (
+                end != -1
+                and (timestamp := parse_timestamp(content[i + 1 : end])) is not None
+            ):
                 if buffer:
                     segments.append((None, "".join(buffer)))
                     buffer = []

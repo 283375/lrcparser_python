@@ -132,7 +132,9 @@ class OldRegexBaseline:
     """旧正则扫描的参考实现，作为差分安全网；确认稳定后可删。"""
 
     LRC_LINE = re.compile(r"(?P<time>\[\d{2}:\d{2}\.\d{2,6}\])(?P<content>.*)")
-    LRC_WORD = re.compile(r"(?P<time><\d{2}:\d{2}\.\d{2,6}>)(?P<content>.*?)(?=<|\n|$){1}")
+    LRC_WORD = re.compile(
+        r"(?P<time><\d{2}:\d{2}\.\d{2,6}>)(?P<content>.*?)(?=<|\n|$){1}"
+    )
 
     @staticmethod
     def old_timestamps_and_content(line):
@@ -162,10 +164,14 @@ def test_differential_against_old_regexes():
             if old is None:
                 continue
             old_timestamps, old_content = old
-            assert list(scanned.timestamps) == old_timestamps, fixture.name + ": " + line
+            assert list(scanned.timestamps) == old_timestamps, (
+                fixture.name + ": " + line
+            )
             assert scanned.content == old_content, fixture.name + ": " + line
             old_words = OldRegexBaseline.old_word_segments(old_content)
             new_words = [
-                (ts, text) for ts, text in scan_word_segments(old_content) if ts is not None
+                (ts, text)
+                for ts, text in scan_word_segments(old_content)
+                if ts is not None
             ]
             assert new_words == old_words, fixture.name + ": " + line
