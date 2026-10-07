@@ -2,7 +2,7 @@ site_name: lrcparser
 repo_url: https://github.com/283375/lrcparser_python
 
 nav:
-  - lrcparser: index.md
+  - Home: index.md
   - Usage: usage.md
   - API:
     - LrcTime: api/time.md
@@ -45,6 +45,7 @@ plugins:
           build: true
           default: true
           nav_translations:
+            Home: 首页
             Usage: 使用
   - mkdocstrings:
       locale: en
